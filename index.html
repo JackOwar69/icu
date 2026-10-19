@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICU Nursing Kardex & Ventilator Flowsheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --theme-header: #f8c8d4;
+            --theme-border: #e6a8b7;
+            --theme-light: #fdf2f5;
+            --theme-dot: #f2a2b8;
+            --theme-accent: #d84374;
+            --theme-accent-dark: #b8325e;
+            --theme-bg: #f3ecee;
+            --theme-banner-text: #111111;
+            --text-dark: #2c2c2c;
+            --text-muted: #7a7a7a;
+            --data-blue: #164684;
+            --drip-red: #b71c1c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--theme-bg);
+            color: var(--text-dark);
+            padding: 20px;
+            transition: background-color 0.25s ease;
+        }
+
+        .control-panel {
+            max-width: 1240px;
+            margin: 0 auto 25px auto;
+            background: #ffffff;
+            border: 2px solid var(--theme-border);
+            border-radius: 12px;
+            padding: 18px 24px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            font-family: 'Quicksand', sans-serif;
+            direction: ltr;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed var(--theme-border);
+            padding-bottom: 12px;
+        }
+
+        .control-header h1 {
+            font-size: 1.22rem;
+            font-weight: 700;
+            color: var(--theme-accent-dark);
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .actions-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .theme-select {
+            padding: 7px 12px;
+            border: 1.5px solid var(--theme-border);
+            border-radius: 8px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 0.84rem;
+            background-color: var(--theme-light);
+            color: var(--theme-accent-dark);
+            cursor: pointer;
+            outline: none;
+        }
+
+        .btn {
+            background-color: var(--theme-accent);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover { background-color: var(--theme-accent-dark); }
+
+        .btn-secondary {
+            background-color: var(--theme-light);
+            color: var(--theme-accent-dark);
+            border: 1px solid var(--theme-border);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--theme-header);
+            color: var(--theme-banner-text);
+        }
+
+        .filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-group {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .search-group input, .search-group select {
+            padding: 8px 12px;
+            border: 1.5px solid var(--theme-border);
+            border-radius: 8px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            width: 100%;
+            outline: none;
+            color: var(--text-dark);
+            background: #fff;
+        }
+
+        .pagination-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge {
+            background: var(--theme-light);
+            border: 1px solid var(--theme-border);
+            color: var(--theme-accent-dark);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .sheets-grid {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .sheets-grid.two-cols {
+            grid-template-columns: repeat(auto-fit, minmax(560px, 1fr));
+        }
+
+        .patient-sheet {
+            background: #ffffff;
+            border: 2.5px solid var(--theme-border);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+            position: relative;
+            overflow: hidden;
+            page-break-inside: avoid;
+        }
+
+        .section-banner {
+            background-color: var(--theme-header);
+            border-top: 2px solid var(--theme-border);
+            border-bottom: 2px solid var(--theme-border);
+            padding: 5px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.92rem;
+            letter-spacing: 0.8px;
+            color: var(--theme-banner-text);
+            text-transform: uppercase;
+        }
+
+        .patient-sheet > .section-banner:first-child {
+            border-top: none;
+        }
+
+        .num-badge {
+            background-color: #111111;
+            color: #ffffff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .sheet-row {
+            display: grid;
+            border-bottom: 1.5px solid var(--theme-border);
+        }
+
+        .sheet-row.dotted-bottom {
+            border-bottom: 1.5px dotted var(--theme-border);
+        }
+
+        .cell {
+            padding: 6px 10px;
+            border-right: 1.5px solid var(--theme-border);
+            font-size: 0.82rem;
+            line-height: 1.38;
+        }
+
+        .cell.dotted-right {
+            border-right: 1.5px dotted var(--theme-border);
+        }
+
+        .cell:last-child { border-right: none; }
+
+        .field-label {
+            font-weight: 700;
+            color: #333;
+            margin-right: 4px;
+        }
+
+        .field-value {
+            color: var(--data-blue);
+            font-weight: 600;
+        }
+
+        .accent-text {
+            color: var(--theme-accent-dark);
+            font-weight: 700;
+        }
+
+        .pink-options {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pink-opt {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            color: #555;
+        }
+
+        .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background-color: var(--theme-dot);
+            display: inline-block;
+        }
+
+        .dot.active {
+            background-color: var(--theme-accent);
+            box-shadow: 0 0 0 2px var(--theme-light), 0 0 0 3.5px var(--theme-accent);
+        }
+
+        .bg-top-row { grid-template-columns: 2.2fr 1.2fr 2fr; }
+        .bg-mid-row { grid-template-columns: 1.35fr 1.55fr 1.05fr 1.05fr; }
+
+        .sub-box-title {
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            color: #222;
+        }
+
+        .checklist-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .assessment-cell {
+            padding: 8px 10px;
+            min-height: 76px;
+            border-bottom: 1.5px dotted var(--theme-border);
+            border-right: 1.5px solid var(--theme-border);
+            font-size: 0.82rem;
+        }
+
+        .assessment-cell:nth-child(2n) { border-right: none; }
+        .assessment-cell.no-bottom { border-bottom: none; }
+
+        .assessment-content {
+            margin-top: 4px;
+            color: var(--data-blue);
+            font-weight: 600;
+            font-size: 0.8rem;
+            line-height: 1.42;
+        }
+
+        .middle-triple-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1.15fr 1.45fr;
+            border-top: 2px solid var(--theme-border);
+            border-bottom: 2px solid var(--theme-border);
+        }
+
+        .triple-col {
+            border-right: 1.5px solid var(--theme-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .triple-col:last-child { border-right: none; }
+
+        .triple-col .section-banner {
+            border-top: none;
+            justify-content: flex-start;
+            padding-left: 10px;
+        }
+
+        .vitals-cols {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            flex: 1;
+            min-height: 125px;
+        }
+
+        .vital-item {
+            border-right: 1.5px dotted var(--theme-border);
+            padding: 6px 3px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+
+        .vital-item:last-child { border-right: none; }
+
+        .vital-item .v-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .vital-item .v-val {
+            font-size: 0.82rem;
+            color: var(--data-blue);
+            font-weight: 700;
+        }
+
+        .vent-params-cols {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            background-color: #ffffff;
+        }
+
+        .vent-param-box {
+            border-right: 1.5px dotted var(--theme-border);
+            padding: 8px 5px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 6px;
+        }
+
+        .vent-param-box:last-child {
+            border-right: none;
+        }
+
+        .vent-param-box .vp-label {
+            font-size: 0.66rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .vent-param-box .vp-val {
+            font-size: 0.8rem;
+            color: var(--theme-accent-dark);
+            font-weight: 700;
+            line-height: 1.25;
+        }
+
+        .vent-mechanics-footer {
+            border-top: 1.5px dotted var(--theme-border);
+            border-bottom: 2px solid var(--theme-border);
+            padding: 6px 12px;
+            background-color: var(--theme-light);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.77rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .accu-body {
+            flex: 1;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .lab-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            flex: 1;
+            padding: 6px 8px;
+            font-size: 0.73rem;
+            gap: 4px;
+        }
+
+        .lab-col-left {
+            border-right: 1.5px dotted var(--theme-border);
+            padding-right: 6px;
+        }
+
+        .lab-col-right { padding-left: 6px; }
+
+        .lab-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .lab-line span.val { color: var(--data-blue); }
+
+        .lab-other {
+            border-top: 1.5px dotted var(--theme-border);
+            padding: 4px 8px;
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .bottom-double-grid {
+            display: grid;
+            grid-template-columns: 1.45fr 1.55fr;
+        }
+
+        .bottom-col {
+            border-right: 1.5px solid var(--theme-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bottom-col:last-child { border-right: none; }
+
+        .bottom-col .section-banner {
+            border-top: none;
+            justify-content: flex-start;
+            padding-left: 10px;
+        }
+
+        .meds-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .meds-table th {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 5px;
+            border-bottom: 1.5px dotted var(--theme-border);
+            background: var(--theme-light);
+        }
+
+        .meds-table th:first-child, .meds-table td:first-child {
+            width: 88px;
+            border-right: 1.5px dotted var(--theme-border);
+            text-align: center;
+            color: var(--theme-accent-dark);
+            font-weight: 700;
+            font-size: 0.72rem;
+        }
+
+        .meds-table td {
+            padding: 5px 8px;
+            border-bottom: 1.5px dotted var(--theme-border);
+            font-size: 0.76rem;
+            color: var(--data-blue);
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        .meds-table tr.drip-row td {
+            background-color: var(--theme-light);
+            color: var(--drip-red);
+        }
+
+        .notes-body {
+            padding: 10px;
+            font-size: 0.79rem;
+            line-height: 1.45;
+            color: var(--data-blue);
+            font-weight: 600;
+            white-space: pre-line;
+        }
+
+        .nursing-tag {
+            display: inline-block;
+            background: var(--theme-light);
+            color: var(--theme-accent-dark);
+            border: 1px solid var(--theme-border);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .vent-params-cols {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .vent-param-box {
+                border-bottom: 1px dotted var(--theme-border);
+            }
+        }
+
+        @media print {
+            .control-panel { display: none !important; }
+            body { background: #fff; padding: 0; }
+            .patient-sheet { box-shadow: none; margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="control-panel">
+        <div class="control-header">
+            <h1>ICU Patient Kardex, Drug Sheet & Ventilator Panel</h1>
+            <div class="actions-wrapper">
+                <span id="recordCountBadge" class="status-badge">Loading compressed dataset (icu_patients_10000.json.gz)...</span>
+                <select id="themeSelector" class="theme-select" onchange="applyTheme(this.value)">
+                    <option value="rose_pink">Theme: Rose Pink (Default)</option>
+                    <option value="clinical_blue">Theme: Clinical Blue</option>
+                    <option value="surgical_green">Theme: Surgical Green</option>
+                    <option value="emerald_teal">Theme: Emerald Teal</option>
+                    <option value="slate_black">Theme: Slate Black</option>
+                    <option value="royal_purple">Theme: Royal Purple</option>
+                    <option value="amber_gold">Theme: Amber Gold</option>
+                    <option value="crimson_red">Theme: Crimson Red</option>
+                    <option value="navy_indigo">Theme: Navy Indigo</option>
+                    <option value="olive_sage">Theme: Olive Sage</option>
+                    <option value="warm_terracotta">Theme: Warm Terracotta</option>
+                    <option value="charcoal_gray">Theme: Charcoal Monochrome</option>
+                </select>
+                <button class="btn btn-secondary" onclick="toggleGridView()" id="gridToggleBtn">
+                    2-Column View (2-Up)
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                    Print / Save PDF
+                </button>
+            </div>
+        </div>
+
+        <div class="filters-row">
+            <div class="search-group">
+                <input type="text" id="searchInput" placeholder="Search by Patient ID (ICU-10001), Name, Medication, or Diagnosis..." oninput="applyFilters()">
+                <select id="diagnosisFilter" onchange="applyFilters()">
+                    <option value="ALL">All ICU Diagnoses</option>
+                </select>
+                <select id="ventFilter" onchange="applyFilters()">
+                    <option value="ALL">Ventilator Status: All Patients</option>
+                    <option value="Yes">On Mechanical Ventilator</option>
+                    <option value="No">Spontaneous Breathing / O2</option>
+                </select>
+            </div>
+
+            <div class="pagination-group">
+                <button class="btn btn-secondary" onclick="prevPage()">Previous</button>
+                <span id="pageIndicator" class="status-badge">Record 1 of 1</span>
+                <button class="btn btn-secondary" onclick="nextPage()">Next</button>
+                <button class="btn" onclick="randomPatient()">Random Case</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sheetsContainer" class="sheets-grid"></div>
+
+    <script>
+        let allPatients = [];
+        let filteredPatients = [];
+        let currentPage = 0;
+        let twoColumnMode = false;
+
+        const COLOR_THEMES = {
+            rose_pink: {
+                header: "#f8c8d4", border: "#e6a8b7", light: "#fdf2f5",
+                dot: "#f2a2b8", accent: "#d84374", accentDark: "#b8325e", bg: "#f3ecee"
+            },
+            clinical_blue: {
+                header: "#bbdefb", border: "#90caf9", light: "#f0f7ff",
+                dot: "#90caf9", accent: "#1976d2", accentDark: "#0d47a1", bg: "#eaeff5"
+            },
+            surgical_green: {
+                header: "#c8e6c9", border: "#81c784", light: "#f1f8f2",
+                dot: "#a5d6a7", accent: "#2e7d32", accentDark: "#1b5e20", bg: "#eaf0eb"
+            },
+            emerald_teal: {
+                header: "#b2dfdb", border: "#80cbc4", light: "#eef8f7",
+                dot: "#80cbc4", accent: "#00796b", accentDark: "#004d40", bg: "#e8f0ef"
+            },
+            slate_black: {
+                header: "#cfd8dc", border: "#90a4ae", light: "#f4f6f7",
+                dot: "#b0bec5", accent: "#263238", accentDark: "#11171a", bg: "#e6eaec"
+            },
+            royal_purple: {
+                header: "#e1bee7", border: "#ba68c8", light: "#faf2fc",
+                dot: "#ce93d8", accent: "#7b1fa2", accentDark: "#4a148c", bg: "#f1ebf2"
+            },
+            amber_gold: {
+                header: "#ffe0b2", border: "#ffb74d", light: "#fff8ee",
+                dot: "#ffcc80", accent: "#e65100", accentDark: "#bf360c", bg: "#f5efe6"
+            },
+            crimson_red: {
+                header: "#ffcdd2", border: "#e57373", light: "#fff2f3",
+                dot: "#ef9a9a", accent: "#c62828", accentDark: "#8e0000", bg: "#f5ebeb"
+            },
+            navy_indigo: {
+                header: "#c5cae9", border: "#7986cb", light: "#f1f3fa",
+                dot: "#9fa8da", accent: "#303f9f", accentDark: "#1a237e", bg: "#ebecf2"
+            },
+            olive_sage: {
+                header: "#dcedc8", border: "#aed581", light: "#f6faef",
+                dot: "#c5e1a5", accent: "#558b2f", accentDark: "#33691e", bg: "#eef2e8"
+            },
+            warm_terracotta: {
+                header: "#ffccbc", border: "#ff8a65", light: "#fff3ef",
+                dot: "#ffab91", accent: "#d84315", accentDark: "#bf360c", bg: "#f4ece9"
+            },
+            charcoal_gray: {
+                header: "#e0e0e0", border: "#9e9e9e", light: "#f7f7f7",
+                dot: "#bdbdbd", accent: "#424242", accentDark: "#212121", bg: "#ebebeb"
+            }
+        };
+
+        function applyTheme(themeKey) {
+            const t = COLOR_THEMES[themeKey] || COLOR_THEMES.rose_pink;
+            const root = document.documentElement;
+            root.style.setProperty("--theme-header", t.header);
+            root.style.setProperty("--theme-border", t.border);
+            root.style.setProperty("--theme-light", t.light);
+            root.style.setProperty("--theme-dot", t.dot);
+            root.style.setProperty("--theme-accent", t.accent);
+            root.style.setProperty("--theme-accent-dark", t.accentDark);
+            root.style.setProperty("--theme-bg", t.bg);
+            try {
+                localStorage.setItem("icu_kardex_theme", themeKey);
+            } catch (e) {}
+        }
+
+        // دالة ذكية تقرأ الملف المضغوط (.json.gz) وتفك ضغطه في المتصفح فوراً، أو تقرأ (.json) العادي احتياطياً
+        async function loadDataset() {
+            const cacheBuster = "?v=" + new Date().getTime();
+            try {
+                const gzResponse = await fetch("./icu_patients_10000.json.gz" + cacheBuster);
+                if (gzResponse.ok) {
+                    const ds = new DecompressionStream("gzip");
+                    const decompressedStream = gzResponse.body.pipeThrough(ds);
+                    const text = await new Response(decompressedStream).text();
+                    return JSON.parse(text);
+                }
+            } catch (gzErr) {
+                console.warn("Compressed file not found or already decompressed, trying fallback...", gzErr);
+            }
+
+            // Fallback: قراءة ملف الـ JSON العادي إذا لم يكن المضغوط موجوداً
+            const jsonResponse = await fetch("./icu_patients_10000.json" + cacheBuster);
+            if (!jsonResponse.ok) {
+                throw new Error("Could not find dataset file.");
+            }
+            return await jsonResponse.json();
+        }
+
+        window.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const savedTheme = localStorage.getItem("icu_kardex_theme");
+                if (savedTheme && COLOR_THEMES[savedTheme]) {
+                    document.getElementById("themeSelector").value = savedTheme;
+                    applyTheme(savedTheme);
+                }
+            } catch (e) {}
+
+            try {
+                const data = await loadDataset();
+                allPatients = Array.isArray(data) ? data : [];
+                document.getElementById("recordCountBadge").textContent =
+                    `Connected: ${allPatients.length.toLocaleString()} ICU Cases Loaded`;
+                populateDiagnosisFilter();
+                applyFilters();
+            } catch (err) {
+                console.error(err);
+                document.getElementById("recordCountBadge").textContent =
+                    `Status: Place icu_patients_10000.json.gz in the same folder`;
+            }
+        });
+
+        function populateDiagnosisFilter() {
+            const select = document.getElementById("diagnosisFilter");
+            const diagnoses = [...new Set(allPatients.map(p => p.ICU_Diagnosis).filter(Boolean))].sort();
+            select.innerHTML = `<option value="ALL">All ICU Diagnoses (${diagnoses.length} Conditions)</option>`;
+            diagnoses.forEach(d => {
+                const opt = document.createElement("option");
+                opt.value = d;
+                opt.textContent = d;
+                select.appendChild(opt);
+            });
+        }
+
+        function createVentilatorSectionHTML(p) {
+            if (p.On_Ventilator !== "Yes" && (!p.Ventilator_Parameters || !p.Ventilator_Parameters.Attached)) {
+                return "";
+            }
+
+            let vp = p.Ventilator_Parameters || {};
+
+            if (!vp.MOD && p.Ventilator_Settings) {
+                const vs = p.Ventilator_Settings;
+                const modeMatch = vs.match(/Mode:\s*([^|]+)/i);
+                const tvMatch = vs.match(/TV:\s*([^|]+)/i);
+                const ipapMatch = vs.match(/IPAP:\s*([^|]+)/i);
+                const rrMatch = vs.match(/RR:\s*([^|]+)/i);
+                const peepMatch = vs.match(/(?:PEEP|EPAP[^:]*):\s*([^|]+)/i);
+                const fio2Match = vs.match(/FiO2:\s*([0-9]+%)/i);
+
+                const diag = p.ICU_Diagnosis || "";
+                const isARDS = diag.includes("ARDS") || diag.includes("Drowning") || diag.includes("Aspiration");
+                const isCOPD = diag.includes("COPD") || diag.includes("Asthma");
+                const isTBI = diag.includes("Brain") || diag.includes("TBI") || diag.includes("Stroke") || diag.includes("Hemorrhage") || diag.includes("ICP");
+                const isCABG = diag.includes("CABG") || diag.includes("Heart Surgery");
+                const isBiPAP = vs.includes("BiPAP") || vs.includes("CPAP Mask");
+
+                vp = {
+                    MOD: modeMatch ? modeMatch[1].trim() : vs.split("|")[0].trim(),
+                    TV: tvMatch ? tvMatch[1].trim() : (ipapMatch ? "Exhaled ~460 mL" : "450 mL (6.5 mL/kg)"),
+                    RR: rrMatch ? rrMatch[1].trim() : (p.Vitals && p.Vitals.RR ? p.Vitals.RR : "18 bpm"),
+                    PEEP: peepMatch ? peepMatch[1].trim() : "8 cmH2O",
+                    FIO2: fio2Match ? fio2Match[1].trim() : "50%",
+                    IE_RATIO: isCOPD ? "1:3.5 (Prolonged)" : (isARDS ? "1:1.5" : "1:2"),
+                    FLOW_PS: isBiPAP && ipapMatch ? `IPAP ${ipapMatch[1].trim()}` : (isCOPD ? "Flow 85 L/min" : (isCABG ? "PS 10 cmH2O" : "Flow 60 L/min")),
+                    PIP_PPLAT: isARDS ? "PIP 34 / Pplat 28" : (isCOPD ? "PIP 36 / Pplat 21" : (isTBI ? "PIP 21 / Pplat 17" : "PIP 26 / Pplat 21")),
+                    MVE: isARDS ? "10.8 L/min" : (isCOPD ? "6.4 L/min" : "8.6 L/min"),
+                    Interface: isBiPAP ? "Non-Invasive Full-Face BiPAP Mask" : (p.Connected_Lines_Devices ? p.Connected_Lines_Devices.split(",")[0] : "Endotracheal Tube (ETT 7.5mm)"),
+                    COMPLIANCE: isARDS ? "Cstat: 21 mL/cmH2O (Stiff Lungs) | Driving P: 14 cmH2O" :
+                                (isCOPD ? "High Airway Resistance | Auto-PEEP: +6 cmH2O" :
+                                (isTBI ? "Cstat: 45 mL/cmH2O | Strict Normocapnia EtCO2 36 mmHg" :
+                                (isCABG ? "RSBI: 48 breaths/min/L (<105 Ready for Weaning) | Cuff: 25 cmH2O" :
+                                "Cstat: 36 mL/cmH2O | Driving P: 13 cmH2O | Cuff: 26 cmH2O")))
+                };
+            }
+
+            return `
+                <!-- 8. MECHANICAL VENTILATOR PARAMETERS -->
+                <div class="section-banner" style="border-top: none;">
+                    <span class="num-badge">8</span>
+                    <span>MECHANICAL VENTILATOR PARAMETERS & LUNG MECHANICS</span>
+                </div>
+                <div class="vent-params-cols">
+                    <div class="vent-param-box">
+                        <span class="vp-label">VENT MODE</span>
+                        <span class="vp-val">${vp.MOD || ""}</span>
+                    </div>
+                    <div class="vent-param-box">
+                        <span class="vp-label">TIDAL VOL (VT)</span>
+                        <span class="vp-val" style="color:var(--data-blue);">${vp.TV || ""}</span>
+                    </div>
+                    <div class="vent-param-box">
+                        <span class="vp-label">RESP RATE (RR)</span>
+                        <span class="vp-val" style="color:var(--data-blue);">${vp.RR || ""}</span>
+                    </div>
+                    <div class="vent-param-box">
+                        <span class="vp-label">PEEP / EPAP</span>
+                        <span class="vp-val">${vp.PEEP || ""}</span>
+                    </div>
+                    <div class="vent-param-box">
+                        <span class="vp-label">FiO2 (%)</span>
+                        <span class="vp-val">${vp.FIO2 || ""}</span>
+                    </div>
+                    <div class="vent-param-box">
+                        <span class="vp-label">I:E RATIO</span>
+                        <span class="vp-val" style="color:var(--data-blue);">${vp.IE_RATIO || ""}</span>
+                    </div>
+                    <div class="vent-param-box">
+                        <span class="vp-label">FLOW / PS</span>
+                        <span class="vp-val" style="color:var(--data-blue);">${vp.FLOW_PS || ""}</span>
+                    </div>
+                    <div class="vent-param-box">
+                        <span class="vp-label">PIP / PPLAT</span>
+                        <span class="vp-val">${vp.PIP_PPLAT || ""}</span>
+                    </div>
+                    <div class="vent-param-box">
+                        <span class="vp-label">MIN VOL (MVe)</span>
+                        <span class="vp-val" style="color:var(--data-blue);">${vp.MVE || ""}</span>
+                    </div>
+                </div>
+                <div class="vent-mechanics-footer">
+                    <span>Airway Interface: <span class="field-value">${vp.Interface || ""}</span></span>
+                    <span>Lung Mechanics & Monitoring: <span class="accent-text">${vp.COMPLIANCE || ""}</span></span>
+                </div>
+            `;
+        }
+
+        function createSheetHTML(p) {
+            const isMale = (p.Sex || "").toLowerCase() === "male";
+            const code = p.Code_Status || "Full";
+            const sit = p.Situation_Flags || {};
+            const prec = p.Precaution_Type || "Standard";
+            const vitals = p.Vitals || {};
+            const accu = p.Accu_Check || {};
+            const labs = p.Labs || {};
+            const meds = Array.isArray(p.Medication_Sheet) ? p.Medication_Sheet : [];
+
+            const medsRowsHTML = meds.map(m => {
+                const isDrip = (m.time || "").includes("DRIP") || (m.time || "").includes("TRANSFUSE") || (m.time || "").includes("ANTIDOTE") || (m.time || "").includes("CRRT") || (m.time || "").includes("RESUSCIT");
+                return `
+                    <tr class="${isDrip ? 'drip-row' : ''}">
+                        <td>${m.time || ""}</td>
+                        <td>${m.task || ""}</td>
+                    </tr>
+                `;
+            }).join("");
+
+            const ventSectionHTML = createVentilatorSectionHTML(p);
+
+            return `
+            <div class="patient-sheet">
+                <!-- 1. PATIENT BACKGROUND -->
+                <div class="section-banner">
+                    <span class="num-badge">1</span>
+                    <span>PATIENT BACKGROUND</span>
+                </div>
+
+                <div class="sheet-row dotted-bottom bg-top-row">
+                    <div class="cell dotted-right">
+                        <span class="field-label">Name:</span>
+                        <span class="field-value">${p.Unreal_Name || ""} (${p.Patient_ID || ""})</span>
+                    </div>
+                    <div class="cell dotted-right">
+                        <span class="field-label">DOB:</span>
+                        <span class="field-value">${p.DOB || ""}</span>
+                    </div>
+                    <div class="cell">
+                        <span class="field-label">Sex:</span>
+                        <div class="pink-options">
+                            <span class="pink-opt"><i class="dot ${isMale ? 'active' : ''}"></i> Male</span>
+                            <span class="pink-opt"><i class="dot ${!isMale ? 'active' : ''}"></i> Female</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sheet-row bg-top-row">
+                    <div class="cell dotted-right">
+                        <span class="field-label">Admit Reason:</span>
+                        <span class="field-value">${p.Chief_Complaint || ""}</span>
+                    </div>
+                    <div class="cell dotted-right">
+                        <span class="field-label">Room:</span>
+                        <span class="field-value">${p.Room || ""}</span>
+                    </div>
+                    <div class="cell">
+                        <span class="field-label">Code:</span>
+                        <div class="pink-options">
+                            <span class="pink-opt"><i class="dot ${code === 'Full' ? 'active' : ''}"></i> Full</span>
+                            <span class="pink-opt"><i class="dot ${code === 'DNR' ? 'active' : ''}"></i> DNR</span>
+                            <span class="pink-opt"><i class="dot ${code === 'Limited' ? 'active' : ''}"></i> Limited</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sheet-row bg-mid-row" style="border-bottom: none;">
+                    <div class="cell" style="padding: 0; display: flex; flex-direction: column;">
+                        <div style="padding: 6px 10px; border-bottom: 1.5px dotted var(--theme-border);">
+                            <span class="field-label">MD:</span>
+                            <span class="field-value">${p.MD || ""}</span>
+                        </div>
+                        <div style="padding: 6px 10px; border-bottom: 1.5px dotted var(--theme-border); flex: 1;">
+                            <div class="field-label">Primary Diagnosis:</div>
+                            <div class="accent-text" style="margin-top: 3px;">${p.ICU_Diagnosis || ""}</div>
+                        </div>
+                        <div style="padding: 6px 10px; flex: 1;">
+                            <div class="field-label">Tests/Procedures (PSH):</div>
+                            <div class="field-value" style="margin-top: 3px;">${p.Past_Surgical_History || ""}</div>
+                        </div>
+                    </div>
+
+                    <div class="cell" style="padding: 0; display: flex; flex-direction: column;">
+                        <div style="padding: 6px 10px; border-bottom: 1.5px solid var(--theme-border); flex: 1; display:flex; flex-direction:column; justify-content:space-between;">
+                            <div>
+                                <div class="sub-box-title">Medical History</div>
+                                <div class="field-value">${p.Past_Medical_History || ""}</div>
+                            </div>
+                            <div style="margin-top: 8px; border-top: 1px dotted var(--theme-border); padding-top: 3px; font-size: 0.75rem; color: var(--text-muted);">
+                                Allergies: <span class="field-value" style="color:${(p.Allergies || '').includes('NKDA') ? 'var(--data-blue)' : '#c62828'};">${p.Allergies || ""}</span>
+                            </div>
+                        </div>
+                        <div style="padding: 6px 10px; flex: 1.2;">
+                            <div class="sub-box-title">Hospital Course & Position</div>
+                            <div class="field-value" style="font-size: 0.76rem;">
+                                <strong>Position:</strong> ${p.Recommended_Position || ""}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cell dotted-right">
+                        <div class="sub-box-title">Situation</div>
+                        <div class="checklist-col">
+                            <span class="pink-opt"><i class="dot ${sit.fall_risk ? 'active' : ''}"></i> Fall risk</span>
+                            <span class="pink-opt"><i class="dot ${sit.alarm ? 'active' : ''}"></i> Alarm</span>
+                            <span class="pink-opt"><i class="dot ${sit.confused ? 'active' : ''}"></i> Confused</span>
+                            <span class="pink-opt"><i class="dot ${sit.restraints ? 'active' : ''}"></i> Restraints</span>
+                            <span class="pink-opt"><i class="dot ${sit.suicide ? 'active' : ''}"></i> Suicide</span>
+                        </div>
+                    </div>
+
+                    <div class="cell">
+                        <div class="sub-box-title">Precaution</div>
+                        <div class="checklist-col">
+                            <span class="pink-opt"><i class="dot ${prec === 'Standard' ? 'active' : ''}"></i> None / Std</span>
+                            <span class="pink-opt"><i class="dot ${prec === 'Droplet' ? 'active' : ''}"></i> Droplet</span>
+                            <span class="pink-opt"><i class="dot ${prec === 'Contact' ? 'active' : ''}"></i> Contact</span>
+                            <span class="pink-opt"><i class="dot ${prec === 'Airborne' ? 'active' : ''}"></i> Airborne</span>
+                            <span class="pink-opt"><i class="dot ${prec === 'Seizure' ? 'active' : ''}"></i> Seizure</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. ASSESSMENT -->
+                <div class="section-banner">
+                    <span class="num-badge">2</span>
+                    <span>ASSESSMENT</span>
+                </div>
+
+                <div class="assessment-grid">
+                    <div class="assessment-cell">
+                        <div class="field-label">Neuro (GCS: <span class="accent-text">${p.GCS || ""}</span>):</div>
+                        <div class="assessment-content">${p.PE_Neurological || ""}</div>
+                    </div>
+                    <div class="assessment-cell">
+                        <div class="field-label">Skin/ Wounds (Braden: ${p.Braden_Scale || ""}):</div>
+                        <div class="assessment-content">${p.PE_Skin_Wounds || ""}</div>
+                    </div>
+
+                    <div class="assessment-cell">
+                        <div class="field-label">Cardiac:</div>
+                        <div class="assessment-content">${p.PE_Cardiovascular || ""}</div>
+                    </div>
+                    <div class="assessment-cell">
+                        <div class="field-label">Musculoskeletal:</div>
+                        <div class="assessment-content">${p.PE_Musculoskeletal || ""}</div>
+                    </div>
+
+                    <div class="assessment-cell">
+                        <div class="field-label">Respiratory:</div>
+                        <div class="assessment-content">${p.PE_Respiratory || ""}</div>
+                    </div>
+                    <div class="assessment-cell">
+                        <div class="field-label">IV sites & Connected Lines:</div>
+                        <div class="assessment-content">${p.Connected_Lines_Devices || ""}</div>
+                    </div>
+
+                    <div class="assessment-cell no-bottom">
+                        <div class="field-label">GI/GU & Urine Output:</div>
+                        <div class="assessment-content">
+                            <div>${p.PE_Gastrointestinal || ""}</div>
+                            <div style="margin-top:4px;" class="accent-text">Urine Output: ${p.Urine_Output || ""}</div>
+                        </div>
+                    </div>
+                    <div class="assessment-cell no-bottom">
+                        <div class="field-label">Drips/Fluids Summary:</div>
+                        <div class="assessment-content">${p.Drips_Summary || ""}</div>
+                    </div>
+                </div>
+
+                <!-- 3. VITALS | 4. ACCU CHECK | 5. LAB -->
+                <div class="middle-triple-grid">
+                    <div class="triple-col">
+                        <div class="section-banner">
+                            <span class="num-badge">3</span>
+                            <span>VITALS</span>
+                        </div>
+                        <div class="vitals-cols">
+                            <div class="vital-item">
+                                <span class="v-label">TEMP</span>
+                                <span class="v-val">${vitals.TEMP || ""}</span>
+                            </div>
+                            <div class="vital-item">
+                                <span class="v-label">BP</span>
+                                <span class="v-val">${vitals.BP || ""}</span>
+                            </div>
+                            <div class="vital-item">
+                                <span class="v-label">HR</span>
+                                <span class="v-val">${vitals.HR || ""}</span>
+                            </div>
+                            <div class="vital-item">
+                                <span class="v-label">RR</span>
+                                <span class="v-val">${vitals.RR || ""}</span>
+                            </div>
+                            <div class="vital-item">
+                                <span class="v-label">SpO2</span>
+                                <span class="v-val">${vitals.SpO2 || ""}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="triple-col">
+                        <div class="section-banner">
+                            <span class="num-badge">4</span>
+                            <span>ACCU CHECK</span>
+                        </div>
+                        <div class="accu-body">
+                            <div style="font-size: 0.78rem; color: var(--data-blue); font-weight: 700;">
+                                <div class="nursing-tag">Point-of-Care Glucose</div>
+                                <div style="font-size: 1rem; margin: 4px 0;" class="accent-text">RBS: ${accu.RBS || ""}</div>
+                                <div style="font-size: 0.73rem;">${accu.Note || ""}</div>
+                            </div>
+                            <div class="pink-options" style="justify-content: space-around; padding-top: 6px; border-top: 1px dotted var(--theme-border);">
+                                <span class="pink-opt"><i class="dot ${accu.Freq === 'AC' ? 'active' : ''}"></i> AC</span>
+                                <span class="pink-opt"><i class="dot ${accu.Freq === 'Q6H' || accu.Freq === 'Q4H' || accu.Freq === 'Q2H' ? 'active' : ''}"></i> Q2-6H</span>
+                                <span class="pink-opt"><i class="dot ${accu.Freq === 'HOURLY' ? 'active' : ''}"></i> HOURLY</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="triple-col">
+                        <div class="section-banner">
+                            <span class="num-badge">5</span>
+                            <span>LAB</span>
+                        </div>
+                        <div class="lab-cols">
+                            <div class="lab-col-left">
+                                <div class="lab-line"><span>NA</span><span class="val">${labs.NA || ""}</span></div>
+                                <div class="lab-line"><span>K</span><span class="val">${labs.K || ""}</span></div>
+                                <div class="lab-line"><span>PH</span><span class="val">${labs.PH || ""}</span></div>
+                                <div class="lab-line"><span>BUN</span><span class="val">${labs.BUN || ""}</span></div>
+                                <div class="lab-line"><span>HGB</span><span class="val">${labs.HGB || ""}</span></div>
+                                <div class="lab-line"><span>PT/INR</span><span class="val">${labs.PT_INR || ""}</span></div>
+                            </div>
+                            <div class="lab-col-right">
+                                <div class="lab-line"><span>MG</span><span class="val">${labs.MG || ""}</span></div>
+                                <div class="lab-line"><span>CA</span><span class="val">${labs.CA || ""}</span></div>
+                                <div class="lab-line"><span>CR</span><span class="val">${labs.CR || ""}</span></div>
+                                <div class="lab-line"><span>WBC</span><span class="val">${labs.WBC || ""}</span></div>
+                                <div class="lab-line"><span>PLT</span><span class="val">${labs.PLT || ""}</span></div>
+                                <div class="lab-line"><span>TROP</span><span class="val">${labs.TROP || ""}</span></div>
+                            </div>
+                        </div>
+                        <div class="lab-other">
+                            ABG/Other: <span class="field-value">${labs.ABG_Other || ""}</span>
+                        </div>
+                    </div>
+                </div>
+
+                ${ventSectionHTML}
+
+                <!-- 6. MEDICATIONS & TO DO | 7. NOTES & PLAN -->
+                <div class="bottom-double-grid">
+                    <div class="bottom-col">
+                        <div class="section-banner">
+                            <span class="num-badge">6</span>
+                            <span>MEDICATIONS & TO DO (COMPLETE ICU DRUG SHEET)</span>
+                        </div>
+                        <table class="meds-table">
+                            <thead>
+                                <tr>
+                                    <th>TIME / ROUTE</th>
+                                    <th>MEDICATION / INFUSION / DOSE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${medsRowsHTML}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bottom-col">
+                        <div class="section-banner">
+                            <span class="num-badge">7</span>
+                            <span>NOTES & PLAN (NURSING CARE & VENT WATCH)</span>
+                        </div>
+                        <div class="notes-body">
+                            <div class="nursing-tag">Priority ICU Nursing Interventions:</div>
+                            <div>${p.Nursing_Interventions || ""}</div>
+                            <div class="nursing-tag" style="margin-top:10px;">Ventilator Precautions & Alarms to Watch:</div>
+                            <div>${p.Ventilator_Watch || ""}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        function renderCurrentPage() {
+            const container = document.getElementById("sheetsContainer");
+            const perPage = twoColumnMode ? 2 : 1;
+            const totalPages = Math.max(1, Math.ceil(filteredPatients.length / perPage));
+
+            if (currentPage >= totalPages) currentPage = totalPages - 1;
+            if (currentPage < 0) currentPage = 0;
+
+            const startIdx = currentPage * perPage;
+            const pageItems = filteredPatients.slice(startIdx, startIdx + perPage);
+
+            if (pageItems.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding: 40px; background:#fff; border-radius:12px; font-weight:700;">No matching ICU patient records found.</div>`;
+            } else {
+                container.innerHTML = pageItems.map(p => createSheetHTML(p)).join("");
+            }
+
+            document.getElementById("pageIndicator").textContent =
+                `Record ${startIdx + 1} of ${filteredPatients.length.toLocaleString()}`;
+        }
+
+        function applyFilters() {
+            const q = document.getElementById("searchInput").value.trim().toLowerCase();
+            const diag = document.getElementById("diagnosisFilter").value;
+            const vent = document.getElementById("ventFilter").value;
+
+            filteredPatients = allPatients.filter(p => {
+                const medsStr = JSON.stringify(p.Medication_Sheet || "").toLowerCase();
+                const matchesSearch = !q ||
+                    (p.Patient_ID && p.Patient_ID.toLowerCase().includes(q)) ||
+                    (p.Unreal_Name && p.Unreal_Name.toLowerCase().includes(q)) ||
+                    (p.ICU_Diagnosis && p.ICU_Diagnosis.toLowerCase().includes(q)) ||
+                    medsStr.includes(q);
+
+                const matchesDiag = (diag === "ALL") || (p.ICU_Diagnosis === diag);
+                const matchesVent = (vent === "ALL") || (p.On_Ventilator === vent);
+
+                return matchesSearch && matchesDiag && matchesVent;
+            });
+
+            currentPage = 0;
+            renderCurrentPage();
+        }
+
+        function nextPage() {
+            const perPage = twoColumnMode ? 2 : 1;
+            if ((currentPage + 1) * perPage < filteredPatients.length) {
+                currentPage++;
+                renderCurrentPage();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                renderCurrentPage();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function randomPatient() {
+            if (filteredPatients.length === 0) return;
+            const perPage = twoColumnMode ? 2 : 1;
+            const totalPages = Math.ceil(filteredPatients.length / perPage);
+            currentPage = Math.floor(Math.random() * totalPages);
+            renderCurrentPage();
+        }
+
+        function toggleGridView() {
+            twoColumnMode = !twoColumnMode;
+            const container = document.getElementById("sheetsContainer");
+            const btn = document.getElementById("gridToggleBtn");
+            if (twoColumnMode) {
+                container.classList.add("two-cols");
+                btn.textContent = "1-Column View (1-Up)";
+            } else {
+                container.classList.remove("two-cols");
+                btn.textContent = "2-Column View (2-Up)";
+            }
+            currentPage = 0;
+            renderCurrentPage();
+        }
+    </script>
+</body>
+</html>
