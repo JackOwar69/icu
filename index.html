@@ -84,6 +84,7 @@
             color: var(--theme-accent-dark);
             cursor: pointer;
             outline: none;
+            transition: 0.2s;
         }
 
         .btn {
@@ -102,7 +103,9 @@
             gap: 6px;
         }
 
-        .btn:hover { background-color: var(--theme-accent-dark); }
+        .btn:hover {
+            background-color: var(--theme-accent-dark);
+        }
 
         .btn-secondary {
             background-color: var(--theme-light);
@@ -520,6 +523,50 @@
             color: var(--drip-red);
         }
 
+        /* CLICKABLE DRUG, DIAGNOSIS, VENT MODE & ABG STYLING */
+        .clickable-drug, .clickable-diagnosis, .clickable-vent-mode, .clickable-abg {
+            color: var(--theme-accent-dark);
+            background-color: var(--theme-light);
+            border: 1px solid var(--theme-border);
+            padding: 1px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 700;
+            display: inline-block;
+            margin: 1px 0;
+            transition: 0.15s;
+        }
+
+        .clickable-diagnosis {
+            padding: 3px 8px;
+            margin-top: 3px;
+            font-size: 0.8rem;
+            line-height: 1.3;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+        }
+
+        .clickable-vent-mode {
+            padding: 3px 6px;
+            font-size: 0.76rem;
+            line-height: 1.25;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+        }
+
+        .clickable-abg {
+            padding: 1px 7px;
+            font-size: 0.74rem;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            margin-right: 3px;
+        }
+
+        .clickable-drug:hover, .clickable-diagnosis:hover, .clickable-vent-mode:hover, .clickable-abg:hover {
+            background-color: var(--theme-header);
+            color: var(--theme-banner-text);
+        }
+
         .notes-body {
             padding: 10px;
             font-size: 0.79rem;
@@ -541,17 +588,111 @@
             margin-bottom: 4px;
         }
 
+        /* POPUP MODAL STYLING */
+        .drug-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.48);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .drug-modal-content {
+            background: #ffffff;
+            border: 2.5px solid var(--theme-border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 650px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+        }
+
+        .drug-modal-header {
+            background-color: var(--theme-header);
+            border-bottom: 2px solid var(--theme-border);
+            padding: 10px 16px;
+            font-weight: 700;
+            font-size: 0.98rem;
+            color: var(--theme-banner-text);
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 0.6px;
+        }
+
+        .drug-modal-body {
+            padding: 16px 20px;
+            font-size: 0.84rem;
+            line-height: 1.52;
+            color: var(--text-dark);
+            max-height: 74vh;
+            overflow-y: auto;
+        }
+
+        .drug-info-row {
+            margin-bottom: 12px;
+            border-bottom: 1.5px dotted var(--theme-border);
+            padding-bottom: 9px;
+        }
+
+        .drug-info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .drug-info-title {
+            font-weight: 700;
+            color: var(--theme-accent-dark);
+            margin-bottom: 4px;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .drug-info-text {
+            color: var(--data-blue);
+            font-weight: 600;
+            white-space: pre-line;
+        }
+
+        .drug-modal-footer {
+            background-color: var(--theme-light);
+            border-top: 2px solid var(--theme-border);
+            padding: 10px 16px;
+            text-align: center;
+        }
+
+        .close-modal-btn {
+            background-color: var(--theme-accent);
+            color: #fff;
+            border: none;
+            padding: 7px 28px;
+            border-radius: 8px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+
+        .close-modal-btn:hover {
+            background-color: var(--theme-accent-dark);
+        }
+
         @media (max-width: 900px) {
-            .vent-params-cols {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .vent-param-box {
-                border-bottom: 1px dotted var(--theme-border);
-            }
+            .vent-params-cols { grid-template-columns: repeat(3, 1fr); }
+            .vent-param-box { border-bottom: 1px dotted var(--theme-border); }
         }
 
         @media print {
-            .control-panel { display: none !important; }
+            .control-panel, .drug-modal-overlay { display: none !important; }
             body { background: #fff; padding: 0; }
             .patient-sheet { box-shadow: none; margin-bottom: 20px; }
         }
@@ -563,7 +704,7 @@
         <div class="control-header">
             <h1>ICU Patient Kardex, Drug Sheet & Ventilator Panel</h1>
             <div class="actions-wrapper">
-                <span id="recordCountBadge" class="status-badge">Loading compressed dataset (icu_patients_10000.json.gz)...</span>
+                <span id="recordCountBadge" class="status-badge">Loading dataset...</span>
                 <select id="themeSelector" class="theme-select" onchange="applyTheme(this.value)">
                     <option value="rose_pink">Theme: Rose Pink (Default)</option>
                     <option value="clinical_blue">Theme: Clinical Blue</option>
@@ -611,11 +752,895 @@
 
     <div id="sheetsContainer" class="sheets-grid"></div>
 
+    <!-- SHARED CLINICAL POPUP MODAL (FOR MEDICATIONS, DIAGNOSES, VENT MODES & ABG) -->
+    <div id="drugModalOverlay" class="drug-modal-overlay" onclick="closeDrugModal()">
+        <div class="drug-modal-content" onclick="event.stopPropagation()">
+            <div class="drug-modal-header" id="modalDrugHeader">Clinical Reference Guide</div>
+            <div class="drug-modal-body" id="modalDrugBody"></div>
+            <div class="drug-modal-footer">
+                <button class="close-modal-btn" onclick="closeDrugModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let allPatients = [];
         let filteredPatients = [];
         let currentPage = 0;
         let twoColumnMode = false;
+
+        // =========================================================================
+        // 1. MECHANICAL VENTILATOR MODES CLINICAL ENCYCLOPEDIA
+        // =========================================================================
+        const VENT_MODE_DATABASE = [
+            {
+                match: ["ac/vc", "volume control", "ardsnet", "obstructive", "normocapnia", "100% o2"],
+                title: "AC/VC (Assist-Control / Volume Control Ventilation)",
+                fullName: "Continuous Mandatory Ventilation - Volume Control (AC/VC or CMV-VC).",
+                meaning: "A volume-targeted mode where every breath delivered to the patient (whether time-triggered by the machine or effort-triggered by the patient) receives the exact same pre-set Tidal Volume (VT) and inspiratory flow rate.",
+                whoBreathes: "BOTH (Machine & Patient Assisted):\n- Machine-Triggered (Control): If the patient is apneic, deeply sedated, or paralyzed, the ventilator automatically delivers the set Respiratory Rate (RR) and set Tidal Volume.\n- Patient-Triggered (Assist): If the patient initiates a spontaneous breath (creates negative pressure/flow trigger), the ventilator senses the effort and delivers a FULL pre-set Tidal Volume breath.\n- Summary: The patient can trigger extra breaths above the set RR, but the MACHINE always performs the work of delivering the full volume.",
+                indications: "1. Newly intubated, deeply sedated, or paralyzed ICU patients (Septic Shock, Coma).\n2. Severe ARDS (ARDSNet Low Tidal Volume Protocol: 4-6 mL/kg IBW to strictly prevent volutrauma).\n3. Neuro-ICU / Severe TBI & Elevated ICP (guarantees a fixed Minute Ventilation to keep PaCO2 strictly at 35-40 mmHg).\n4. Obstructive Lung Disease (COPD / Status Asthmaticus) with prolonged I:E ratio (1:3.5 to 1:4.5).",
+                parameters: "- Set by Clinician (Independent): Tidal Volume (VT), Respiratory Rate (RR), PEEP, FiO2, Inspiratory Flow Rate (L/min), and Trigger Sensitivity.\n- Variable / Monitored (Dependent): Peak Inspiratory Pressure (PIP) and Plateau Pressure (Pplat) -> vary directly with the patient's lung compliance and airway resistance!",
+                nursingWatch: "- Advantage: Guarantees a fixed Tidal Volume and Minute Ventilation even if lung compliance changes.\n- Risks & Alarms: 1) High Pressure Alarm (Barotrauma risk if secretions, bronchospasm, or stiff lungs spike PIP/Pplat -> check Pplat < 30 cmH2O); 2) Hyperventilation/ Breath-Stacking (Auto-PEEP) if an anxious/tachypneic patient triggers too many full-volume breaths."
+            },
+            {
+                match: ["ac/pc", "pressure control"],
+                title: "AC/PC (Assist-Control / Pressure Control Ventilation)",
+                fullName: "Continuous Mandatory Ventilation - Pressure Control (AC/PC or PCV).",
+                meaning: "A pressure-targeted, time-cycled mode where the ventilator delivers gas until a pre-set Inspiratory Pressure (Pinsp) is reached and holds that pressure for a set Inspiratory Time (Ti), using a decelerating flow waveform.",
+                whoBreathes: "BOTH (Machine & Patient Assisted):\n- Machine-Triggered (Control): If the patient does not breathe, the machine delivers time-triggered pressure breaths at the set RR.\n- Patient-Triggered (Assist): If the patient initiates a breath, the machine assists by delivering the full set Inspiratory Pressure for the set Inspiratory Time.\n- Summary: Either the patient or machine can trigger the breath, but the MACHINE controls the pressure and inspiratory time while the resulting Tidal Volume varies.",
+                indications: "1. Severe ARDS or Stiff Non-Compliant Lungs where Peak/Plateau pressures on Volume Control are dangerously high (> 30 cmH2O).\n2. Patients at high risk of Barotrauma (Pneumothorax, Bullous Emphysema, Post-Thoracic Surgery).\n3. Pediatric/Neonatal ICU or patients with small uncuffed/leaking Endotracheal Tubes.",
+                parameters: "- Set by Clinician (Independent): Inspiratory Pressure (Pinsp above PEEP), Respiratory Rate (RR), Inspiratory Time (Ti) or I:E Ratio, PEEP, and FiO2.\n- Variable / Monitored (Dependent): Exhaled Tidal Volume (VTe) and Minute Ventilation (MVe) -> vary directly with lung compliance and resistance!",
+                nursingWatch: "- Advantage: Strictly limits Peak Alveolar Pressure (prevents barotrauma) and improves gas distribution via decelerating flow.\n- Risks & Alarms: Low Tidal Volume / Low Minute Ventilation Alarm! If the patient's lungs become stiffer (worsening ARDS/edema) or ETT plugs with mucus, the delivered Tidal Volume will drop dangerously without triggering a high-pressure alarm -> closely watch Exhaled VT and EtCO2!"
+            },
+            {
+                match: ["simv"],
+                title: "SIMV + PS (Synchronized Intermittent Mandatory Ventilation + Pressure Support)",
+                fullName: "Synchronized Intermittent Mandatory Ventilation combined with Pressure Support (SIMV-VC + PS).",
+                meaning: "A mixed mode that delivers a set number of mandatory volume-controlled breaths synchronized with the patient's effort, while allowing the patient to take additional spontaneous breaths in between mandatory breaths assisted by Pressure Support (PS).",
+                whoBreathes: "SHARED (Machine delivers Mandatory breaths + Patient takes Spontaneous breaths):\n- Mandatory Breaths: Delivered by the machine (synchronized with patient effort if present) at the set SIMV Rate and set Tidal Volume.\n- Spontaneous Breaths (in between mandatory breaths): Initiated AND controlled by the PATIENT, with the ventilator providing a gentle Pressure Support (PS 8-12 cmH2O) boost to overcome ETT resistance.",
+                indications: "1. Transitional / Gradual Weaning from full mechanical ventilation as sedation is lightened.\n2. Post-operative ICU patients waking up from anesthesia.\n3. Patients who breath-stack (hyperventilate) on AC/VC mode.",
+                parameters: "- Set by Clinician: SIMV Mandatory Rate, Mandatory Tidal Volume (VT), Pressure Support (PS) level for spontaneous breaths, PEEP, and FiO2.\n- Variable / Monitored: Total Respiratory Rate (Mandatory + Spontaneous), Spontaneous Tidal Volume, and PIP.",
+                nursingWatch: "- Advantage: Exercises respiratory muscles on spontaneous breaths while guaranteeing a backup safety minute ventilation via mandatory breaths.\n- Risks & Alarms: Watch for respiratory muscle fatigue (tachypnea RR > 30, low spontaneous VT < 4 mL/kg, diaphoresis) if the SIMV rate or Pressure Support is set too low."
+            },
+            {
+                match: ["cpap", "psv", "weaning", "pressure support"],
+                title: "CPAP / PSV (Continuous Positive Airway Pressure + Pressure Support Ventilation)",
+                fullName: "Spontaneous Breathing Mode: Continuous Positive Airway Pressure with Pressure Support (CPAP / PSV).",
+                meaning: "A purely spontaneous invasive weaning mode where the ventilator does NOT set a respiratory rate or tidal volume; instead, it maintains a continuous baseline PEEP (CPAP) and boosts each patient-initiated breath with a set Pressure Support (PS).",
+                whoBreathes: "100% PATIENT-INITIATED (Assisted by Machine Pressure Support):\n- The PATIENT initiates every single breath, determines the Respiratory Rate, and controls the length of inspiration.\n- The MACHINE only provides PEEP (to keep alveoli open) and Pressure Support (PS 8-12 cmH2O) to help lift the breath through the endotracheal tube.\n- Safety Backup: If the patient stops breathing for > 20 seconds, the ventilator triggers 'Apnea Backup Ventilation'.",
+                indications: "1. Spontaneous Breathing Trial (SBT) & Fast-Track Weaning prior to Extubation (e.g., Post-CABG Day 1, resolving Pneumonia/Sepsis).\n2. Awake, intubated patients with intact respiratory drive and stable hemodynamics.",
+                parameters: "- Set by Clinician: Pressure Support (PS: 5-12 cmH2O), PEEP / CPAP (5-8 cmH2O), FiO2 (<= 40%), Flow Trigger, and Apnea Backup Settings.\n- Variable / Monitored (Patient-Driven): Respiratory Rate (RR), Exhaled Tidal Volume (VTe), and Minute Ventilation (MVe).",
+                nursingWatch: "- Extubation Readiness Criteria: Calculate Rapid Shallow Breathing Index (RSBI = RR / VT in Liters; target < 105 breaths/min/L), ensure Negative Inspiratory Force (NIF < -20 cmH2O), check Positive Cuff Leak Test, and verify GCS/cough reflex.\n- Alarms to Watch: Apnea Alarm (if oversedated) or Tachypnea / Low VT Alarm (weaning failure)."
+            },
+            {
+                match: ["bipap", "niv", "non-invasive"],
+                title: "NIV - BiPAP (Non-Invasive Bilevel Positive Airway Pressure)",
+                fullName: "Non-Invasive Positive Pressure Ventilation - Bilevel Positive Airway Pressure (BiPAP S/T Mode).",
+                meaning: "Non-invasive mechanical ventilation delivered via a tight-fitting Full-Face or Nasal Mask without an endotracheal tube, cycling between two pressure levels: a higher Inspiratory Positive Airway Pressure (IPAP) and a lower Expiratory Positive Airway Pressure (EPAP).",
+                whoBreathes: "PATIENT-TRIGGERED with Machine Backup (Spontaneous/Timed - S/T Mode):\n- The PATIENT initiates breaths via mask flow sensor, and the machine steps up pressure from EPAP to IPAP.\n- If the patient's respiratory rate drops below the set Backup Rate, the machine automatically delivers time-triggered IPAP breaths.\n- Driving Pressure (IPAP minus EPAP) equals the Pressure Support that unloads respiratory muscles and blows off CO2.",
+                indications: "1. Gold-Standard First-Line in Acute Exacerbation of COPD (AECOPD) with hypercapnic acidosis (reduces intubation need by > 50%).\n2. Acute Cardiogenic Pulmonary Edema / ADHF (pushes fluid out of alveoli and reduces LV preload/afterload).\n3. Immunocompromised hypoxic respiratory failure or Post-Extubation stridor/weaning bridge.",
+                parameters: "- Set by Clinician: IPAP (12-20 cmH2O -> controls TV & CO2 washout), EPAP (5-10 cmH2O = PEEP -> controls oxygenation), FiO2, and Backup RR.\n- Variable / Monitored: Exhaled Tidal Volume (VTe), Patient RR, and Mask Air Leak (L/min).",
+                nursingWatch: "- ABSOLUTE CONTRAINDICATIONS: Coma / Impaired Consciousness (GCS < 10), Active Vomiting / Upper GI Bleed (high aspiration risk), Facial Trauma, or Hemodynamic Shock.\n- Nursing Care: Apply hydrocolloid dressing over the nasal bridge to prevent pressure ulcers, keep mask leak < 25 L/min, and watch for hypotension after starting BiPAP."
+            },
+            {
+                match: ["aprv", "bilevel", "bivent"],
+                title: "APRV / BiLevel (Airway Pressure Release Ventilation)",
+                fullName: "Airway Pressure Release Ventilation (Inverse-Ratio Open-Lung Mode).",
+                meaning: "An advanced time-cycled, pressure-targeted rescue mode that maintains a continuous high airway pressure (P-High) for a prolonged time (T-High: 4-6 sec) to recruit collapsed alveoli, with brief periodic releases to low pressure (P-Low: 0 cmH2O for T-Low: 0.5-0.8 sec) to expel CO2.",
+                whoBreathes: "BOTH (Machine Time-Cycled Releases + Unrestricted Spontaneous Patient Breathing):\n- The MACHINE maintains P-High and performs timed brief pressure releases (T-Low) to ventilate CO2.\n- The PATIENT can breathe spontaneously at any point during the long P-High phase via an active exhalation valve without needing deep paralysis.",
+                indications: "1. Refractory Severe ARDS (P/F Ratio < 100) failing conventional ARDSNet volume/pressure control.\n2. Massive Bilateral Atelectasis or Morbidly Obese ICU patients with severe alveolar collapse.",
+                parameters: "- Set by Clinician: P-High (25-30 cmH2O), T-High (4.0-6.0 sec), P-Low (0 cmH2O), T-Low (0.4-0.8 sec), and FiO2.\n- Variable / Monitored: Release Tidal Volume, Minute Ventilation, and End-Expiratory Flow termination (set T-Low to terminate at 50-75% of Peak Expiratory Flow).",
+                nursingWatch: "- Advantage: Maximizes Mean Airway Pressure and alveolar recruitment without high Peak pressures.\n- Risks: Barotrauma (Pneumothorax) and hemodynamic compromise (high intrathoracic pressure reduces venous return)."
+            }
+        ];
+
+        // =========================================================================
+        // 2. COMPREHENSIVE ICU DIAGNOSIS CLINICAL ENCYCLOPEDIA
+        // =========================================================================
+        const DIAGNOSIS_DATABASE = [
+            {
+                match: ["ards", "acute respiratory distress"],
+                title: "ARDS (Acute Respiratory Distress Syndrome)",
+                definition: "An acute, diffuse, inflammatory form of lung injury characterized by increased alveolar-capillary permeability, non-cardiogenic pulmonary edema, loss of aerated lung tissue ('stiff lungs'), and severe refractory hypoxemia occurring within 1 week of a known clinical insult.",
+                etiology: "- Sepsis & Septic Shock (Most common extra-pulmonary cause): Systemic inflammatory cytokines damage the pulmonary vascular endothelium.\n- Severe Pneumonia (Most common pulmonary cause): Direct bacterial or viral alveolar injury.\n- Aspiration of Gastric Contents: Chemical burn from hydrochloric acid (Mendelson's syndrome).\n- Severe Trauma & Multiple Transfusions (TRALI): Neutrophil activation in pulmonary microcirculation.\n- Acute Pancreatitis, Near-Drowning, and Smoke Inhalation.",
+                symptoms: "- Severe, rapidly worsening dyspnea and tachypnea (RR > 30 bpm).\n- Refractory hypoxemia unresponsive to high-flow supplemental oxygen.\n- Cyanosis, intercostal retractions, and diffuse bilateral harsh crackles (rales) on auscultation.\n- High ventilator Peak and Plateau pressures due to markedly reduced lung compliance.",
+                investigations: "- ABG (Arterial Blood Gas): Severe hypoxemia with PaO2/FiO2 (P/F Ratio) <= 300 (Mild: 200-300, Moderate: 100-200, Severe: < 100), initially respiratory alkalosis followed by hypercapnic respiratory acidosis.\n- Chest X-Ray & Chest CT: Bilateral diffuse patchy or ground-glass alveolar infiltrates ('white-out lungs') without cardiomegaly.\n- Echocardiography / BNP: Normal Left Ventricular Ejection Fraction and BNP < 100 pg/mL (rules out cardiogenic pulmonary edema).\n- Ventilator Mechanics: Low Static Compliance (Cstat < 30 mL/cmH2O).",
+                treatment: "- Lung-Protective Mechanical Ventilation (ARDSNet Protocol): Low Tidal Volume (4 to 6 mL/kg Ideal Body Weight), Plateau Pressure < 30 cmH2O, Driving Pressure < 15 cmH2O, and High PEEP (10-18 cmH2O) to recruit collapsed alveoli.\n- Prone Positioning (16 hours/day) for Severe ARDS (P/F < 150) to recruit dorsal lung units.\n- Neuromuscular Blockade (Cisatracurium drip for 48h) + Deep Sedation (RASS -5) to eliminate ventilator dyssynchrony.\n- Conservative Fluid Management (FACTT protocol with Furosemide) to keep lungs dry, plus systemic Corticosteroids (Dexamethasone/Methylprednisolone) and Veno-Venous ECMO in refractory cases.",
+                complications: "- Barotrauma & Volutrauma (Tension Pneumothorax, Pneumomediastinum from high PEEP/pressures).\n- Ventilator-Associated Pneumonia (VAP).\n- Pulmonary Fibrosis, Right Ventricular Failure (Cor Pulmonale), and Multi-Organ Dysfunction Syndrome (MODS).",
+                redFlags: "- Never disconnect the ventilator circuit unnecessarily (causes immediate alveolar derecruitment and severe desaturation -> use inline closed suction only).\n- Ensure RASS -5 sedation BEFORE starting Cisatracurium paralysis, and pad face/eyes during Prone Positioning."
+            },
+            {
+                match: ["aspiration pneumonitis"],
+                title: "Aspiration Pneumonitis & Pneumonia",
+                definition: "Acute chemical lung injury caused by the inhalation of sterile acidic gastric contents (pH < 2.5) into the lower respiratory tract, often complicated by secondary bacterial superinfection in patients with impaired airway reflexes.",
+                etiology: "- Decreased Level of Consciousness (GCS <= 8): Stroke, TBI, seizures, drug overdose, or hepatic coma.\n- Improper Nasogastric Tube (NGT) Feeding: Feeding in flat supine position or high gastric residual volume.\n- Dysphagia, Severe Vomiting, or Lack of Endotracheal Cuff Inflation.",
+                symptoms: "- Abrupt onset of severe dyspnea, coughing, wheezing, and cyanosis within 1-2 hours of witnessed vomiting/regurgitation.\n- Pink frothy or gastric-colored sputum suctioned from airway.\n- Fever, tachycardia, and coarse crackles (classically in the Right Lower Lobe due to straighter right mainstem bronchus).",
+                investigations: "- ABG: Acute hypoxemia (Low PaO2, low P/F ratio) and widened A-a gradient.\n- Chest X-Ray: Infiltrates in dependent lung segments (Right lower lobe or posterior upper lobes if supine).\n- CBC & Sputum Culture: Leukocytosis (WBC > 14k) and mixed aerobic/anaerobic growth if secondary bacterial pneumonia develops.",
+                treatment: "- Immediate airway suctioning and endotracheal intubation if GCS <= 8 or hypoxic failure develops.\n- Mechanical ventilation with PEEP (8-12 cmH2O) and inline bronchodilators (Salbutamol/Ipratropium).\n- Empiric Antibiotics (Piperacillin/Tazobactam or Ceftriaxone + Clindamycin/Metronidazole) if aspiration pneumonia or gastric bowel obstruction is present.",
+                complications: "- Progression to Severe ARDS.\n- Lung Abscess, Necrotizing Pneumonia, and Empyema.",
+                redFlags: "- Keep Head of Bed elevated 30-45° at all times during enteral NGT feeding and verify ETT cuff pressure (20-30 cmH2O) every shift."
+            },
+            {
+                match: ["trauma-induced lung", "pulmonary contusion"],
+                title: "Trauma-Induced Lung Injury (Pulmonary Contusion)",
+                definition: "Direct parenchymal lung bruising caused by blunt or blast chest trauma, leading to alveolar hemorrhage and interstitial edema without necessarily lacerating the lung tissue, typically worsening over the first 24-48 hours.",
+                etiology: "- High-Speed Motor Vehicle Collisions: Rapid deceleration striking the chest against the steering wheel.\n- Falls from Height & Crush Chest Injuries (often associated with multiple rib fractures or Flail Chest).\n- Blast Injuries.",
+                symptoms: "- Tachypnea, hemoptysis (coughing blood), chest wall ecchymosis, and crepitus.\n- Paradoxical chest wall movement (if Flail Chest is present).\n- Progressive hypoxemia and crackles over injured lung zones.",
+                investigations: "- Chest CT Scan (Gold Standard): Non-segmental areas of consolidation and ground-glass opacities appearing immediately after trauma, plus rib fractures or hemopneumothorax.\n- ABG: Progressive hypoxemia (falling PaO2/FiO2 ratio) and respiratory acidosis if pain limits ventilation.\n- Hb & Coagulation Profile: Drop in Hemoglobin if associated with massive hemothorax.",
+                treatment: "- Lung-protective ventilation (Low TV, moderate PEEP to act as 'internal pneumatic stabilization' for flail chest segments).\n- Multimodal Analgesia (Thoracic Epidural, Paracetamol, Fentanyl, Ketamine) to allow deep breathing and coughing.\n- Judicious fluid resuscitation (avoid crystalloid overload which floods contused alveoli).",
+                complications: "- Secondary ARDS and Ventilator-Associated Pneumonia.\n- Tension Pneumothorax when positive pressure ventilation is initiated.",
+                redFlags: "- Watch closely for sudden hypotension and unilateral absent breath sounds after starting mechanical ventilation (occult pneumothorax converting to Tension Pneumothorax)."
+            },
+            {
+                match: ["drowning"],
+                title: "Drowning / Near-Drowning with Secondary ARDS",
+                definition: "Respiratory impairment resulting from submersion or immersion in liquid, causing surfactant washout, alveolar collapse (atelectasis), non-cardiogenic pulmonary edema, and hypoxic ischemic encephalopathy.",
+                etiology: "- Freshwater or Saltwater Submersion: Both wash out alveolar surfactant, disrupt the alveolar-capillary membrane, and cause severe V/Q mismatch.\n- Diving Injuries (associated with cervical spine trauma), Seizures in water, or Cardiac Syncope.",
+                symptoms: "- Severe hypoxemia, tachypnea, coughing copious pink frothy sputum, and diffuse rales/wheezes.\n- Hypothermia (core temp < 35°C), altered mental status / coma, and metabolic acidosis.",
+                investigations: "- ABG: Severe hypoxemia (PaO2 < 60 mmHg), high-anion-gap metabolic acidosis (elevated Lactate > 4 mmol/L from tissue hypoxia), and hypercapnia.\n- Chest X-Ray: Perihilar and diffuse bilateral alveolar infiltrates (pulmonary edema).\n- Core Temperature & ECG: J-waves (Osborn waves) if hypothermic, or sinus tachycardia.",
+                treatment: "- Immediate 100% FiO2 oxygenation, endotracheal intubation, and High PEEP (10-15 cmH2O) to re-expand collapsed surfactant-depleted alveoli.\n- Active rewarming if hypothermic, and Neuro-ICU targeted temperature management if post-cardiac arrest.\n- Bronchodilators for bronchospasm; antibiotics ONLY if submerged in grossly contaminated water or pneumonia develops.",
+                complications: "- Severe ARDS, Anoxic Brain Injury, Acute Kidney Injury (from hypoxia/rhabdomyolysis), and Pneumonia.",
+                redFlags: "- Cervical spine immobilization is mandatory if diving or trauma is suspected; use inline closed suctioning to preserve PEEP."
+            },
+            {
+                match: ["copd exacerbation", "aecopd"],
+                title: "Acute Exacerbation of COPD (AECOPD) with Hypercapnic Failure",
+                definition: "An acute worsening of respiratory symptoms (dyspnea, cough, and sputum production) in a COPD patient beyond day-to-day variations, resulting in severe airflow obstruction, dynamic hyperinflation (air trapping), and acute-on-chronic hypercapnic respiratory acidosis.",
+                etiology: "- Respiratory Tract Infections (70-80%): Bacterial (Haemophilus influenzae, Streptococcus pneumoniae, Pseudomonas) or viral triggers.\n- Non-Adherence to Inhalers or Excessive Oxygen Administration (blunting hypoxic drive & worsening V/Q mismatch via Haldane effect).\n- Environmental Pollution, Heart Failure, or Pulmonary Embolism.",
+                symptoms: "- Severe expiratory wheezing, prolonged expiratory phase, purse-lip breathing, barrel chest, and use of sternocleidomastoid/scalene accessory muscles.\n- Drowsiness, confusion, headache, and flapping tremor (asterixis) due to CO2 Narcosis (Hypercapnic Encephalopathy).",
+                investigations: "- ABG: Acute-on-Chronic Respiratory Acidosis -> Low pH (< 7.30), Markedly Elevated PaCO2 (65-95 mmHg), Elevated Compensatory HCO3 (30-38 mEq/L), and Hypoxemia (PaO2 55-65 mmHg).\n- CBC: Secondary Polycythemia (Elevated Hgb 16-18 g/dL) and Leukocytosis.\n- Chest X-Ray: Hyperinflated lung fields, flattened diaphragms, and rule out pneumonia or pneumothorax.",
+                treatment: "- Controlled Oxygen Therapy: Titrate FiO2 strictly to target SpO2 88-92% ONLY.\n- Non-Invasive Ventilation (BiPAP) is first-line; if intubated: Low RR (10-14 bpm), High Inspiratory Flow (80-100 L/min), and Prolonged I:E Ratio (1:3.5 to 1:4.5) to allow trapped air to exhale.\n- Short-Acting Bronchodilators (Salbutamol + Ipratropium nebulizers q2-4h), Systemic Corticosteroids (Methylprednisolone 40mg IV q6h), and Antibiotics (Levofloxacin or Azithromycin + Ceftriaxone).",
+                complications: "- Dynamic Hyperinflation (Intrinsic Auto-PEEP) causing sudden PEA Arrest or severe hypotension.\n- Barotrauma (Pneumothorax) and Post-Hypercapnic Metabolic Alkalosis.",
+                redFlags: "- Watch the ventilator Flow-Time waveform: if expiratory flow does not reach zero before the next breath (Auto-PEEP), lower the RR immediately or disconnect ETT for 10-15 sec if severe hypotension occurs."
+            },
+            {
+                match: ["asthma exacerbation", "status asthmaticus"],
+                title: "Severe Asthma Exacerbation (Status Asthmaticus)",
+                definition: "A life-threatening, severe acute asthma attack characterized by refractory bronchospasm, airway mucosal edema, and mucus plugging that fails to respond to initial repetitive bronchodilator therapy, leading to acute respiratory failure.",
+                etiology: "- Viral Upper Respiratory Infections or Allergen Exposure.\n- Abrupt Discontinuation of Inhaled Corticosteroids.\n- Drug Triggers: NSAIDs/Aspirin or Non-selective Beta-Blockers.",
+                symptoms: "- Extreme dyspnea, inability to speak in full sentences, tripod positioning, diaphoresis, and pulsus paradoxus (> 15 mmHg).\n- Diffuse inspiratory and expiratory wheezing; 'Silent Chest' (absence of wheezing due to minimal airflow) is an ominous sign of impending respiratory arrest.",
+                investigations: "- ABG: Early stage shows Respiratory Alkalosis (PaCO2 < 35); a 'Normalizing' or Rising PaCO2 (> 42-50 mmHg) with falling pH (< 7.25) indicates severe respiratory muscle exhaustion!\n- Ventilator Mechanics: Extremely high Peak Inspiratory Pressure (PIP > 40 cmH2O) with a normal/low Plateau Pressure (wide PIP-Pplat gradient > 15 cmH2O due to severe airway resistance).",
+                treatment: "- Continuous/Frequent Nebulized Salbutamol (Ventolin) + Ipratropium Bromide (Atrovent).\n- High-Dose IV Corticosteroids (Methylprednisolone 60 mg IV q6h) + IV Magnesium Sulfate (2 g IV over 20 min as smooth muscle bronchodilator).\n- If Intubated: Use largest ETT (8.0 mm), sedate with Ketamine or Propofol (bronchodilators; NEVER use Morphine), set Low RR (10-12 bpm) and I:E 1:4 with permissive hypercapnia.",
+                complications: "- Tension Pneumothorax, Pneumomediastinum, Severe Auto-PEEP Hypotension, and Anoxic Cardiac Arrest.",
+                redFlags: "- A 'Silent Chest' and drowsiness with a rising PaCO2 require immediate intubation using Ketamine/Propofol."
+            },
+            {
+                match: ["respiratory failure"],
+                title: "Acute Hypoxemic & Hypercapnic Respiratory Failure",
+                definition: "Inability of the respiratory system to maintain adequate gas exchange, classified into Type I (Hypoxemic: PaO2 < 60 mmHg with normal/low PaCO2) and Type II (Hypercapnic/Ventilatory pump failure: PaCO2 > 50 mmHg with pH < 7.35).",
+                etiology: "- V/Q Mismatch & Shunt (Type I): Pneumonia, pulmonary edema, ARDS, atelectasis.\n- Alveolar Hypoventilation & Pump Failure (Type II): COPD, sedative/opioid overdose, neuromuscular disorders, respiratory muscle fatigue.",
+                symptoms: "- Tachypnea or bradypnea, nasal flaring, intercostal/suprasternal retractions, paradoxical abdominal breathing, cyanosis, tachycardia, and agitation progressing to somnolence.",
+                investigations: "- ABG: Confirms Type I (PaO2 < 60) vs Type II (PaCO2 > 50, pH < 7.35) and calculates A-a gradient & P/F ratio.\n- Chest X-Ray, CT Chest, ECG, and Sputum/Blood Cultures to identify underlying cause.",
+                treatment: "- High-Flow Nasal Cannula (HFNC), Non-Invasive BiPAP, or Invasive Mechanical Ventilation depending on mental status and severity.\n- Treat underlying etiology (bronchodilators, diuretics, antibiotics, or reversal agents) + VAP bundle.",
+                complications: "- Hypoxic Encephalopathy, Cardiac Arrhythmias, Ventilator-Induced Lung Injury, and VAP.",
+                redFlags: "- Monitor work of breathing, accessory muscle use, and serial ABGs 30-60 minutes after any ventilator adjustment."
+            },
+            {
+                match: ["pulmonary embolism"],
+                title: "Massive Pulmonary Embolism (PE) with RV Strain",
+                definition: "Obstruction of the pulmonary arterial tree by a thromboembolism (usually originating from a lower-extremity Deep Vein Thrombosis), causing an abrupt spike in Pulmonary Vascular Resistance, acute Right Ventricular (RV) failure, and obstructive shock.",
+                etiology: "- Virchow's Triad (Venous Stasis, Endothelial Injury, Hypercoagulability):\n- Prolonged Immobilization, Recent Major Orthopedic/Abdominal Surgery, or Trauma.\n- Active Malignancy, Pregnancy, Oral Contraceptives, or Inherited Thrombophilia.",
+                symptoms: "- Sudden-onset dyspnea, pleuritic chest pain, tachypnea, tachycardia, cough, and hemoptysis.\n- In Massive PE: Syncope, distended neck veins (elevated JVP), RV parasternal heave, loud P2 heart sound, and refractory obstructive hypotension.",
+                investigations: "- CT Pulmonary Angiography (CTPA - Gold Standard): Direct visualization of intraluminal filling defect (saddle or lobar thrombus) and RV/LV ratio > 1.0.\n- ABG & Labs: Hypoxemia, Respiratory Alkalosis (low PaCO2 from tachypnea), widened A-a gradient, markedly elevated D-Dimer, and elevated Troponin & BNP (markers of RV strain/ischemia).\n- ECG: Sinus tachycardia, S1Q3T3 pattern, right bundle branch block (RBBB), and T-wave inversion in V1-V4.\n- Bedside Echo: McConnell's sign (akinesia of mid-RV free wall with normal apex) and dilated IVC.",
+                treatment: "- Anticoagulation: Immediate Unfractionated Heparin IV bolus + continuous infusion (target aPTT 60-85 sec) or LMWH (Enoxaparin 1 mg/kg SC q12h) if hemodynamically stable.\n- Systemic Thrombolysis (Alteplase tPA 100 mg IV over 2 hours) or Catheter-Directed Thrombectomy if Massive PE with shock (SBP < 90 mmHg).\n- Hemodynamic Support: Norepinephrine (improves RV coronary perfusion); AVOID aggressive IV fluid boluses!",
+                complications: "- Obstructive Cardiogenic Shock, PEA Cardiac Arrest, Pulmonary Infarction, and Major Bleeding from Thrombolysis.",
+                redFlags: "- AVOID aggressive IV fluid challenges in Massive PE (excess fluid over-distends the failing Right Ventricle, pushes the interventricular septum into the Left Ventricle, and worsens shock!).\n- Avoid intubating unless strictly necessary; if intubated, keep PEEP low (<= 5 cmH2O) to avoid crushing RV preload."
+            },
+            {
+                match: ["pneumothorax"],
+                title: "Tension / Traumatic Pneumothorax",
+                definition: "Accumulation of air within the pleural space causing partial or complete lung collapse; in Tension Pneumothorax, a one-way valve mechanism traps air under positive pressure, shifting the mediastinum and compressing the vena cava.",
+                etiology: "- Ventilator Barotrauma: High PEEP or High Peak Pressures in ARDS, COPD, or Asthma.\n- Iatrogenic: Subclavian or Internal Jugular Central Venous Catheter (CVC) insertion.\n- Blunt or Penetrating Chest Trauma (Rib fractures lacerating pleura) or Spontaneous bullae rupture.",
+                symptoms: "- Sudden severe dyspnea, pleuritic chest pain, tachycardia, and acute desaturation (drop in SpO2).\n- Unilateral absent or diminished breath sounds, hyperresonance to percussion, subcutaneous emphysema, tracheal deviation to the opposite side, distended neck veins, and obstructive shock.",
+                investigations: "- Clinical Diagnosis & Bedside Lung Ultrasound: Absence of 'lung sliding', 'barcode/stratosphere sign' on M-mode, and presence of 'lung point'.\n- Chest X-Ray: Visceral pleural line with absent lung markings peripherally and contralateral mediastinal shift (Never delay needle decompression for X-ray in Tension Pneumothorax!).\n- Ventilator Alarm: Sudden spike in Peak Inspiratory Pressure (PIP) and Plateau Pressure.",
+                treatment: "- Immediate Needle Thoracentesis (2nd ICS mid-clavicular line or 5th ICS anterior axillary line) if Tension Pneumothorax.\n- Definitive Tube Thoracostomy (Chest Tube 24-28 Fr) connected to an Underwater Seal Drainage System with -20 cmH2O suction.",
+                complications: "- Obstructive Shock, PEA Cardiac Arrest, Bronchopleural Fistula (persistent air leak), and Re-expansion Pulmonary Edema.",
+                redFlags: "- Chest Tube Nursing Care: Keep drainage chamber below chest level, observe water-seal chamber for tidaling (fluctuation with respiration) and continuous bubbling (air leak), and NEVER clamp a bubbling chest tube!"
+            },
+            {
+                match: ["pleural effusion"],
+                title: "Massive Pleural Effusion with Compressive Atelectasis",
+                definition: "Pathological accumulation of fluid (transudate, exudate, pus/empyema, or blood/hemothorax) in the pleural cavity, compressing lung parenchyma and impairing gas exchange.",
+                etiology: "- Transudative (Low protein): Decompensated Heart Failure, Liver Cirrhosis (Hepatic hydrothorax), or Nephrotic Syndrome.\n- Exudative (High protein/LDH): Parapneumonic Effusion / Empyema, Malignancy, Pulmonary Embolism, or Tuberculosis.",
+                symptoms: "- Progressive dyspnea, orthopnea, dry cough, and dull aching chest discomfort.\n- Stony dullness to percussion, absent breath sounds, and decreased tactile fremitus over the affected lung base.",
+                investigations: "- Chest X-Ray & Chest Ultrasound/CT: Blunting of costophrenic angle, meniscus sign, or complete hemithorax opacification with contralateral mediastinal shift.\n- Diagnostic Thoracentesis (Light's Criteria): Pleural fluid protein/serum ratio > 0.5, LDH ratio > 0.6 (Exudate); pH < 7.20 or frank pus indicates Empyema requiring chest tube drainage.",
+                treatment: "- Therapeutic Thoracentesis or Pigtail Catheter / Chest Tube insertion.\n- Treat underlying cause: IV Loop Diuretics (Furosemide) for heart failure, or IV Antibiotics (Meropenem / Piperacillin-Tazobactam) + fibrinolytics for complicated parapneumonic effusion/empyema.",
+                complications: "- Re-expansion Pulmonary Edema (if > 1.5 Liters drained too rapidly), Pneumothorax, and Fibrothorax / Trapped Lung.",
+                redFlags: "- Limit pleural fluid drainage to a maximum of 1000-1500 mL at one time (or clamp/slow down if the patient develops coughing or chest tightness) to prevent Re-expansion Pulmonary Edema."
+            },
+            {
+                match: ["lobar pneumonia", "community-acquired pneumonia", "ventilator-associated pneumonia"],
+                title: "Severe Pneumonia (CAP / HAP / VAP)",
+                definition: "Acute severe infection of the pulmonary parenchyma involving the alveoli and distal airways, causing consolidation, exudative alveolar filling, V/Q mismatch, and intrapulmonary shunting.",
+                etiology: "- Community-Acquired (CAP): Streptococcus pneumoniae, Legionella, Staphylococcus aureus, or respiratory viruses.\n- Hospital/Ventilator-Associated (HAP/VAP > 48h post-intubation): Pseudomonas aeruginosa, Acinetobacter, Klebsiella (ESBL), and MRSA.",
+                symptoms: "- High fever (> 38.5°C) or hypothermia, chills, productive cough (rusty or purulent green/yellow sputum) or copious ETT secretions, pleuritic pain, tachypnea, and hypoxia.",
+                investigations: "- Chest X-Ray / CT: Lobar or multi-lobar air-space consolidation with air bronchograms.\n- Labs & Cultures: Marked Leukocytosis (WBC 16k-28k with left shift), elevated Procalcitonin (> 2.0 ng/mL) and CRP, Blood Cultures x2, and Endotracheal Aspirate / BAL culture.\n- ABG: Hypoxemia (low PaO2) and elevated Lactate if progressing to sepsis.",
+                treatment: "- Empiric IV Antibiotics within 1 Hour: Ceftriaxone + Azithromycin/Levofloxacin (for CAP) OR Meropenem/Piperacillin-Tazobactam + Vancomycin/Linezolid (for HAP/VAP).\n- Oxygen therapy / Mechanical ventilation, inline bronchodilators, mucolytics, chest physiotherapy, and frequent suctioning.",
+                complications: "- Septic Shock, ARDS, Parapneumonic Effusion / Empyema, and Lung Abscess.",
+                redFlags: "- Enforce the ICU VAP Prevention Bundle: HOB 30-45°, Chlorhexidine 0.12% oral care q6h, subglottic suctioning, cuff pressure 20-30 cmH2O, and daily sedation vacation."
+            },
+            {
+                match: ["septic shock", "severe sepsis", "mods", "multi-organ"],
+                title: "Septic Shock & Multi-Organ Dysfunction Syndrome (MODS)",
+                definition: "Life-threatening organ dysfunction caused by a dysregulated host response to infection (Sepsis), progressing to circulatory and cellular/metabolic failure (Septic Shock) requiring vasopressors to maintain MAP >= 65 mmHg AND serum Lactate > 2 mmol/L despite adequate fluid resuscitation.",
+                etiology: "- Pulmonary Source (45%): Severe Pneumonia / Empyema.\n- Urinary Tract (Urosepsis - 20%): Obstructive pyelonephritis or catheter-associated UTI.\n- Intra-Abdominal (20%): Bowel perforation, peritonitis, cholangitis, or pancreatitis.\n- Intravascular Catheter-Related Bloodstream Infection (CRBSI) or Soft Tissue Necrotizing Infection.",
+                symptoms: "- Early Warm Hyperdynamic Phase: Fever/rigors, bounding pulses, warm flushed skin, tachypnea, and acute confusion (septic encephalopathy).\n- Late Cold Hypodynamic Phase: Refractory hypotension (MAP < 65), sinus tachycardia (> 120 bpm), cold mottled extremities, delayed CRT (> 4 sec), and severe oliguria/anuria (< 0.5 mL/kg/hr).",
+                investigations: "- ABG & Serum Lactate: High-Anion-Gap Lactic Acidosis (pH < 7.25, HCO3 < 16, Lactate > 4.0 mmol/L indicating severe tissue hypoperfusion).\n- CBC & Coagulation: WBC > 18k (or leukopenia < 4k), Thrombocytopenia (Platelets < 100k), and elevated INR/D-dimer (DIC).\n- Organ Function Labs: Elevated Creatinine & BUN (Sepsis-AKI), elevated Bilirubin/AST/ALT (Shock liver), and high Procalcitonin.\n- Microbiology: 2 sets of Blood Cultures (aerobic & anaerobic), urine, and sputum cultures drawn BEFORE antibiotics.",
+                treatment: "- Surviving Sepsis Campaign 1-Hour Bundle: Measure Lactate, obtain Blood Cultures, administer broad-spectrum IV Antibiotics (Meropenem + Vancomycin), and infuse 30 mL/kg Balanced Crystalloid (Ringer's Lactate) for hypotension or Lactate >= 4.\n- Vasopressors: First-line Norepinephrine via CVC titrated to MAP >= 65 mmHg; add Vasopressin (0.03 U/min) as second-line.\n- Stress-dose Hydrocortisone (50 mg IV q6h) for refractory shock + Source Control (drain abscess, remove infected line).",
+                complications: "- Multi-Organ Dysfunction Syndrome (MODS), Disseminated Intravascular Coagulation (DIC), ARDS, Acute Kidney Injury requiring CRRT, and Digital Ischemia.",
+                redFlags: "- Every hour of delay in administering IV antibiotics in Septic Shock increases mortality by ~7-8%.\n- Repeat Serum Lactate every 2-4 hours to guide resuscitation."
+            },
+            {
+                match: ["cardiogenic shock", "myocardial infarction", "stemi", "nstemi", "heart failure", "adhf"],
+                title: "Cardiogenic Shock, Acute MI (STEMI) & Decompensated Heart Failure",
+                definition: "Severe myocardial pump failure (most commonly from extensive Left Ventricular infarction or end-stage cardiomyopathy) resulting in critically reduced Cardiac Output (Cardiac Index < 2.2 L/min/m2), systemic tissue hypoperfusion, and elevated pulmonary venous congestion (PCWP > 18 mmHg).",
+                etiology: "- Acute Anterior STEMI / Extensive Myocardial Infarction (> 40% LV myocardium lost).\n- Mechanical Complications of MI: Acute Mitral Regurgitation (papillary muscle rupture), Ventricular Septal Rupture, or Free Wall Rupture.\n- Acute Decompensated Heart Failure (HFrEF EF < 25%), Myocarditis, or Valvular Crisis.",
+                symptoms: "- Crushing retrosternal chest pain radiating to left arm/jaw, cold clammy diaphoretic skin, mottled extremities, and narrow pulse pressure.\n- Severe orthopnea, paroxysmal nocturnal dyspnea, pink frothy sputum, bilateral diffuse wet crackles, elevated JVP, and S3 ventricular gallop.",
+                investigations: "- 12-Lead ECG: ST-segment elevation (STEMI), ST depression, or new Left Bundle Branch Block (LBBB).\n- Cardiac Biomarkers: Markedly elevated High-Sensitivity Troponin I/T and elevated BNP (> 1500 pg/mL) or NT-proBNP.\n- Echocardiography: Severely depressed LV Ejection Fraction (EF 15-30%) and regional wall motion abnormalities.\n- ABG & Labs: Hypoxemia, metabolic lactic acidosis (Lactate > 2.5 mmol/L), and elevated Creatinine (Cardiorenal syndrome).",
+                treatment: "- Immediate Coronary Revascularization: Primary PCI (Drug-eluting stent) or CABG.\n- Inotropes & Vasopressors: Dobutamine (2.5-10 mcg/kg/min to boost contractility) + Norepinephrine (if MAP < 65 mmHg).\n- Preload/Afterload Reduction (if SBP > 95 mmHg): IV Furosemide (Lasix) continuous drip + IV Nitroglycerin + Non-Invasive BiPAP.\n- Dual Antiplatelet Therapy (Aspirin + Ticagrelor/Clopidogrel), Heparin infusion, High-intensity Statin, and Mechanical Circulatory Support (IABP / Impella / VA-ECMO).",
+                complications: "- Malignant Ventricular Arrhythmias (VT/VF Arrest), Flash Pulmonary Edema, Cardiorenal AKI, and LV Mural Thrombus / Stroke.",
+                redFlags: "- NEVER give fluid boluses in Cardiogenic Shock with pulmonary crackles! Keep Serum K+ >= 4.0 mEq/L and Mg++ >= 2.0 mg/dL to prevent fatal VT/VF while on Dobutamine and Lasix."
+            },
+            {
+                match: ["post-cabg", "open heart surgery", "coronary artery bypass"],
+                title: "Post-CABG (Coronary Artery Bypass Graft) - Cardiothoracic ICU",
+                definition: "Immediate post-operative critical care management following open-heart surgical revascularization (e.g., Left Internal Mammary Artery to LAD + Saphenous Vein Grafts) on cardiopulmonary bypass.",
+                etiology: "- Left Main Stem Coronary Stenosis (> 50%) or Triple-Vessel Coronary Artery Disease.\n- Failed PCI or ischemic cardiomyopathy with viable myocardium.",
+                symptoms: "- Admitted intubated, hypothermic (35.5-36.2°C), with median sternotomy incision, mediastinal & pleural chest tubes, and epicardial pacing wires.\n- Hemodynamic fluctuations due to post-bypass myocardial stunning, vasoplegia, or fluid shifts.",
+                investigations: "- Serial ABGs & Electrolytes: Check K+ (keep 4.0-4.5), Mg++ (> 2.0), Ionized Ca++, Hgb, and Lactate q2-4h.\n- Coagulation Profile (INR, aPTT, Fibrinogen, Platelets, ACT) if chest tube bleeding is excessive.\n- Portable Chest X-Ray & 12-Lead ECG: Verify ETT, CVC, Swan-Ganz, and chest tube positions; rule out graft ischemia or tamponade.",
+                treatment: "- Fast-Track Weaning & Extubation within 4-6 hours using Dexmedetomidine (Precedex) and multimodal analgesia.\n- Inotropic/Vasoactive Support: Low-dose Epinephrine, Norepinephrine, or Nitroglycerin (prevents LIMA/radial graft spasm).\n- Early Aspirin (within 6h post-op once bleeding stops), Cefazolin surgical prophylaxis, Insulin drip (keep BG 140-180 mg/dL), and active Bair Hugger rewarming.",
+                complications: "- Cardiac Tamponade (from clotted mediastinal tube), Surgical Re-exploration for Bleeding, Post-Op Atrial Fibrillation (POAF - 30% incidence), Low Cardiac Output Syndrome, and Deep Sternal Wound Mediastinitis.",
+                redFlags: "- CARDIAC TAMPONADE RED FLAG: Sudden cessation of mediastinal chest tube drainage accompanied by Beck's Triad (falling BP/narrow pulse pressure, rising CVP/JVD, muffled heart sounds) -> notify Cardiac Surgeon immediately for bedside resternotomy! Report chest tube drainage > 150-200 mL/hr."
+            },
+            {
+                match: ["arrhythmia", "vt", "vf", "afib", "cardiac arrest", "post-resuscitation", "rosc"],
+                title: "Malignant Arrhythmias (VT/VF) & Post-Cardiac Arrest (ROSC) Care",
+                definition: "Life-threatening cardiac rhythm disturbances (Sustained Ventricular Tachycardia, Ventricular Fibrillation, or Rapid AFib with RVR) and comprehensive post-resuscitation ICU syndrome following Return of Spontaneous Circulation (ROSC).",
+                etiology: "- Acute Myocardial Ischemia / Infarction or Myocardial Scar.\n- Severe Electrolyte Derangements (Hypokalemia, Hyperkalemia, Hypomagnesemia).\n- Drug Toxicity / QTc Prolongation (Torsades de Pointes), Hypoxia, or Acidosis (H's and T's).",
+                symptoms: "- Palpitations, chest pain, syncope, hypotension, or sudden pulseless collapse.\n- Post-ROSC: Comatose state (anoxic encephalopathy), post-arrest myocardial stunning, and systemic ischemia-reperfusion response.",
+                investigations: "- Continuous 12-Lead ECG & Telemetry: Wide-complex tachycardia (VT), chaotic fibrillatory waves (VF), or irregular narrow-complex tachycardia (AFib); check QTc interval.\n- Labs & ABG: Serum K+, Mg++, Ca++, Troponin, Lactate, and ABG.\n- Brain CT & Continuous EEG (in Post-ROSC coma to rule out intracranial bleed and non-convulsive status epilepticus).",
+                treatment: "- ACLS & Antiarrhythmics: Synchronized Cardioversion (for unstable VT/AFib) or Defibrillation (for VF/pulseless VT), IV Amiodarone drip (1 mg/min x 6h then 0.5 mg/min), Lidocaine, or IV Magnesium Sulfate (2 g for Torsades).\n- Post-ROSC Care: Targeted Temperature Management (TTM: actively maintain core temp <= 36.0°C or prevent fever > 37.5°C for 24-72h), maintain MAP > 65-70 mmHg, SpO2 94-98% (avoid hyperoxia), and PaCO2 35-45 mmHg.",
+                complications: "- Recurrent Cardiac Arrest, Anoxic Brain Injury / Myoclonic Status Epilepticus, Cardiogenic Shock, and Aspiration Pneumonia.",
+                redFlags: "- Keep defibrillator pads attached on high-risk VT/VF patients, infuse Amiodarone in D5W via CVC, and strictly prevent fever in Post-ROSC patients."
+            },
+            {
+                match: ["tamponade"],
+                title: "Cardiac Tamponade",
+                definition: "Life-threatening compression of the heart chambers by rapid or massive fluid/blood accumulation within the non-distensible pericardial sac, equalizing diastolic pressures and severely restricting ventricular filling (obstructive shock).",
+                etiology: "- Post-Cardiac Surgery (CABG/Valve) or Post-PCI/Pacemaker perforation.\n- Penetrating or Blunt Chest Trauma (Hemopericardium).\n- Malignant Pericardial Effusion, Uremic Pericarditis, or Acute Aortic Dissection.",
+                symptoms: "- Beck's Triad: 1) Systemic Hypotension with narrowed pulse pressure, 2) Jugular Venous Distension (JVD), 3) Muffled/Distant Heart Sounds.\n- Pulsus Paradoxus (> 10 mmHg drop in SBP during inspiration), sinus tachycardia, dyspnea, and electrical alternans.",
+                investigations: "- Bedside Echocardiography (Gold Standard): Circumferential pericardial effusion with Right Atrial systolic collapse, Right Ventricular diastolic collapse, and a plethoric non-collapsing IVC.\n- 12-Lead ECG: Low-voltage QRS complexes and Electrical Alternans (alternating QRS amplitude beat-to-beat due to swinging heart).\n- Chest X-Ray: Enlarged globular 'water-bottle' cardiac silhouette (if chronic/large).",
+                treatment: "- Emergent Ultrasound-Guided Pericardiocentesis (with pigtail drain placement) OR Surgical Pericardial Window / Resternotomy.\n- Temporary Bridge: IV Fluid bolus (to boost filling pressure) + Norepinephrine; avoid positive-pressure ventilation or high PEEP until drained if possible.",
+                complications: "- PEA Cardiac Arrest, Cardiogenic/Obstructive Shock, and Coronary Laceration during pericardiocentesis.",
+                redFlags: "- Monitor pericardial pigtail drain output hourly; if drainage suddenly stops and CVP rises while BP falls, the catheter is occluded by clot."
+            },
+            {
+                match: ["hypertensive emergency", "aortic dissection"],
+                title: "Hypertensive Emergency & Acute Aortic Dissection",
+                definition: "Severe blood pressure elevation (typically > 180/120 mmHg) accompanied by acute, ongoing target-organ damage (brain, heart, aorta, kidneys); in Aortic Dissection, an intimal tear allows blood to surge into the aortic media, creating a false lumen.",
+                etiology: "- Uncontrolled Chronic Hypertension & Medication Non-Compliance.\n- Connective Tissue Disorders (Marfan Syndrome), Bicuspid Aortic Valve, or Cocaine/Sympathomimetic Toxicity.\n- Preeclampsia/Eclampsia or Pheochromocytoma.",
+                symptoms: "- Aortic Dissection: Sudden, excruciating 'tearing or ripping' chest pain radiating to the interscapular back, asymmetric blood pressure between right and left arms (> 20 mmHg difference), and pulse deficits.\n- Hypertensive Encephalopathy / Organ Damage: Severe headache, visual blurring (papilledema), confusion, chest pain, or flash pulmonary edema.",
+                investigations: "- CT Angiography (CTA) of Chest/Abdomen (Gold Standard for Dissection): Visualizes intimal flap separating true and false lumens (Stanford Type A involves ascending aorta -> surgical emergency; Type B involves descending aorta).\n- Labs & ECG: Creatinine, Troponin, Urinalysis (hematuria/proteinuria), and ECG (LV hypertrophy or inferior STEMI if dissection extends to right coronary artery).",
+                treatment: "- Aortic Dissection Impulse Control: 1st IV Beta-Blocker (Esmolol or Labetalol) to drop Heart Rate < 60 bpm, THEN add IV Nicardipine or Nitroprusside to drop Systolic BP to 100-120 mmHg within 20 minutes (+ Immediate Surgery for Type A).\n- Hypertensive Emergency (without dissection): Reduce MAP by max 20-25% in the first hour using IV Nicardipine or Labetalol.",
+                complications: "- Aortic Rupture, Cardiac Tamponade, Acute Aortic Regurgitation, Stroke, Mesenteric/Renal Ischemia, and Watershed Cerebral Infarction (if BP dropped too fast).",
+                redFlags: "- NEVER give a vasodilator (Nitroprusside/Nicardipine/Hydralazine) alone in Aortic Dissection without first blocking the Heart Rate (< 60 bpm) with Esmolol/Labetalol, as reflex tachycardia increases aortic wall shear stress and extends the tear!"
+            },
+            {
+                match: ["hypovolemic", "hemorrhagic shock"],
+                title: "Severe Hypovolemic / Hemorrhagic Shock",
+                definition: "Critical reduction in intravascular volume (loss of > 30-40% blood volume in Class III/IV hemorrhage or severe fluid loss) leading to decreased venous return (preload), reduced stroke volume, and inadequate tissue oxygen delivery.",
+                etiology: "- Hemorrhagic: Polytrauma (pelvic/femur fractures, splenic/liver laceration), Massive GI Bleeding, Ruptured Abdominal Aortic Aneurysm, or Post-partum/Surgical hemorrhage.\n- Non-Hemorrhagic: Severe Burns, Acute Pancreatitis third-spacing, or intractable vomiting/diarrhea.",
+                symptoms: "- Sinus tachycardia (> 120 bpm), hypotension, narrow pulse pressure, tachypnea, cold pale clammy skin, delayed capillary refill (> 4 sec), flat neck veins (low CVP < 2 mmHg), confusion, and oliguria (< 20 mL/hr).",
+                investigations: "- ABG & Lactate: High-anion-gap metabolic lactic acidosis (Lactate > 4 mmol/L) and Base Deficit worse than -6 mEq/L.\n- CBC & Coagulation: Serial Hemoglobin/Hematocrit (note: initial Hgb may be falsely normal before fluid equilibration), Platelets, INR, and Fibrinogen (< 150 mg/dL indicates coagulopathy).\n- FAST Exam / CT Scan: Free intraperitoneal fluid (blood) in trauma.",
+                treatment: "- Immediate Hemorrhage Control (Tourniquet, Pelvic Binder, Endoscopy, or Damage Control Surgery).\n- Massive Transfusion Protocol (1:1:1 ratio of Packed RBCs : Fresh Frozen Plasma : Platelets) + IV Tranexamic Acid (1 g over 10 min within 3h of trauma).\n- Warmed Balanced Crystalloids (Ringer's Lactate) via 2 large-bore (14G-16G) IVs; use Norepinephrine only transiently while restoring volume.",
+                complications: "- The 'Lethal Triad' of Trauma: Hypothermia + Metabolic Acidosis + Coagulopathy.\n- Acute Kidney Injury (Acute Tubular Necrosis), Ischemic Hepatitis, and MODS.",
+                redFlags: "- Warm all blood products and IV fluids, and monitor Ionized Calcium after every 4 units of PRBCs (citrate preservative in blood bags binds calcium causing hypocalcemic hypotension and coagulopathy -> give IV Calcium Gluconate/Chloride)."
+            },
+            {
+                match: ["traumatic brain injury", "tbi", "stroke", "intracranial hemorrhage", "ich", "subarachnoid", "sah", "status epilepticus", "coma", "intracranial pressure", "icp"],
+                title: "Neuro-ICU: Severe TBI, Stroke (CVA), ICH/SAH, Status Epilepticus & Elevated ICP",
+                definition: "Acute primary structural, vascular, or electrical brain injury complicated by secondary cerebral edema, intracranial hypertension (ICP > 20 mmHg), and compromised Cerebral Perfusion Pressure (CPP = MAP - ICP).",
+                etiology: "- Traumatic Brain Injury (TBI): Motor vehicle collisions or falls causing Epidural, Subdural, or Diffuse Axonal Injury.\n- Cerebrovascular: Large-Vessel Ischemic Stroke (MCA occlusion), Hypertensive Intracerebral Hemorrhage (ICH), or Ruptured Berry Aneurysm causing Subarachnoid Hemorrhage (SAH).\n- Status Epilepticus: Continuous seizures > 5-30 min from anti-epileptic non-compliance, infection, trauma, or metabolic derangement.",
+                symptoms: "- Decreased GCS (<= 8 = Coma requiring intubation), focal hemiplegia, aphasia, or tonic-clonic/non-convulsive seizures.\n- Signs of Elevated ICP & Herniation: Unilateral dilated sluggish/fixed pupil (CN III compression), projectile vomiting, headache, and Cushing's Triad (Hypertension with wide pulse pressure + Reflex Bradycardia + Irregular Cheyne-Stokes respirations).",
+                investigations: "- Non-Contrast Head CT & CT Angiography: Hyperdense blood (lens-shaped in Epidural, crescent-shaped in Subdural, star-shaped in basal cisterns for SAH) or midline shift (> 5 mm) and effaced basal cisterns.\n- ICP Monitoring (via External Ventricular Drain - EVD): ICP > 20 mmHg.\n- Labs & ABG: Strict PaCO2 (35-40 mmHg), Serum Sodium (Target 145-155 mEq/L on hypertonic therapy), Serum Osmolality (< 320 mOsm/kg), and Continuous EEG (for Status Epilepticus).",
+                treatment: "- ICP & CPP Management: Elevate HOB 30° with head neutral midline, Osmotherapy with 3% Hypertonic Saline drip/bolus or 20% Mannitol (0.5-1 g/kg IV via filter), CSF drainage via EVD, and Propofol/Fentanyl sedation.\n- Disease-Specific: IV Alteplase (tPA) / Mechanical Thrombectomy (for Ischemic Stroke); IV Nicardipine to keep SBP < 140 (for ICH); Oral/OGT Nimodipine 60mg q4h (for SAH vasospasm); IV Lorazepam/Midazolam + Levetiracetam/Propofol (for Status Epilepticus).\n- Strict Normothermia (Paracetamol + cooling blanket) and Normoglycemia (140-180 mg/dL).",
+                complications: "- Uncal or Tonsillar Brain Herniation (Brain Death), Cerebral Vasospasm / Delayed Cerebral Ischemia (Days 4-14 post-SAH), Hydrocephalus, Neurogenic Pulmonary Edema, and Diabetes Insipidus / Cerebral Salt Wasting.",
+                redFlags: "- EVD SAFETY RULE: Always zero EVD at the Tragus of the ear (Foramen of Monro) and CLAMP the EVD before changing bed height or turning the patient to prevent catastrophic over-drainage!\n- Never insert a Nasogastric Tube (NGT) in head trauma -> use Orogastric Tube (OGT) only."
+            },
+            {
+                match: ["acute kidney injury", "aki", "esrd", "renal", "electrolyte", "hyperkalemia", "hyponatremia", "metabolic acidosis"],
+                title: "Renal & Electrolyte ICU: AKI, ESRD, Severe Hyperkalemia & Metabolic Acidosis",
+                definition: "Abrupt loss of kidney excretory function (AKI: rise in Serum Creatinine >= 0.3 mg/dL in 48h or Urine Output < 0.5 mL/kg/hr for > 6h) or decompensated ESRD resulting in uremia, volume overload, refractory metabolic acidosis, and life-threatening hyperkalemia.",
+                etiology: "- Prerenal (60%): Septic, hypovolemic, or cardiogenic shock causing renal hypoperfusion.\n- Intrinsic Renal (35%): Acute Tubular Necrosis (ATN) from prolonged ischemia or nephrotoxins (Vancomycin, Aminoglycosides, IV Contrast, NSAIDs, Myoglobinuria in Rhabdomyolysis).\n- Postrenal (5%): Bilateral ureteral or bladder outlet obstruction.",
+                symptoms: "- Oliguria (< 400 mL/day) or Anuria (< 100 mL/day), peripheral & pulmonary edema, hypertension, uremic encephalopathy (confusion, asterixis), and pericardial rub.\n- Hyperkalemia (K+ > 6.0 mEq/L): Muscle weakness, paresthesias, bradycardia, and lethal cardiac conduction arrest.",
+                investigations: "- Renal Panel & ABG: Markedly elevated Creatinine (3.0-9.0 mg/dL) and BUN (> 60 mg/dL), Hyperkalemia (K+ 5.8-7.5 mEq/L), Hyperphosphatemia, Hypocalcemia, and High-Anion-Gap Metabolic Acidosis (pH < 7.20, HCO3 < 12 mEq/L).\n- 12-Lead ECG (in Hyperkalemia): Tall Peaked T-waves -> Prolonged PR & loss of P-wave -> Widened QRS complex -> Sine-Wave pattern -> VF/Asystole.\n- Renal Ultrasound & Urinalysis: Muddy brown granular casts (classic for ATN) and rule out hydronephrosis.",
+                treatment: "- Emergency Hyperkalemia 3-Step Protocol: 1) Stabilize cardiac membrane with IV Calcium Gluconate 10% (10-20 mL over 5 min), 2) Shift K+ into cells with IV Regular Insulin (10 Units) + 50 mL Dextrose 50% AND Nebulized Salbutamol (10-20 mg), 3) Eliminate K+ with Lokelma/Kayexalate, IV Furosemide, or Dialysis.\n- Renal Replacement Therapy (Indications - AEIOU): Severe Acidosis (pH < 7.15), Refractory Hyperkalemia, Intoxications, Fluid Overload (pulmonary edema), and Uremic encephalopathy/pericarditis -> use CRRT (CVVHDF) in hemodynamically unstable ICU patients.",
+                complications: "- Hyperkalemic Sinus Arrest / VF, Uremic Pericardial Tamponade, Uremic Platelet Dysfunction Bleeding, and Osmotic Demyelination Syndrome (if hyponatremia corrected > 8 mEq/L/24h).",
+                redFlags: "- AV Fistula Protection: Never measure BP, draw blood, or insert IV lines in the arm with a dialysis arteriovenous fistula; check thrill and bruit q4h.\n- Use Subcutaneous Unfractionated Heparin (NOT Enoxaparin) for DVT prophylaxis in renal failure."
+            },
+            {
+                match: ["diabetic ketoacidosis", "dka", "hyperosmolar", "hhs", "dehydration"],
+                title: "Diabetic Ketoacidosis (DKA) & Hyperosmolar Hyperglycemic State (HHS)",
+                definition: "Acute life-threatening decompensations of diabetes mellitus: DKA is characterized by the triad of Hyperglycemia (> 250 mg/dL), Ketonemia, and High-Anion-Gap Metabolic Acidosis (pH < 7.30, HCO3 < 18); HHS features extreme hyperglycemia (> 600 mg/dL) and hyperosmolarity (> 320 mOsm/kg) without significant ketoacidosis.",
+                etiology: "- Absolute or Relative Insulin Deficiency + Surge in Counter-Regulatory Hormones (Glucagon, Cortisol, Catecholamines):\n- Infection / Sepsis (Pneumonia, UTI - most common precipitating factor 40%).\n- Missed Insulin Doses / Non-Compliance or New-Onset Type 1 Diabetes.\n- Acute MI, Stroke, Pancreatitis, or High-Dose Corticosteroids.",
+                symptoms: "- Polyuria, polydipsia, profound dehydration (dry mucous membranes, sunken eyes, poor skin turgor, tachycardia, hypotension), nausea, vomiting, and diffuse abdominal pain (in DKA).\n- Kussmaul Respirations (deep, rapid breathing to blow off CO2) with fruity acetone breath odor, lethargy, and coma (especially in HHS).",
+                investigations: "- Labs & ABG: Blood Glucose 350-600 mg/dL (DKA) or 600-1200 mg/dL (HHS); Arterial pH < 7.15, HCO3 < 10 mEq/L, Elevated Anion Gap (> 20 mEq/L), Positive Serum Beta-Hydroxybutyrate (> 3 mmol/L) & Urine Ketones.\n- Electrolytes: Pseudohyponatremia (correct Na+ by adding 1.6 mEq/L for every 100 mg/dL glucose above 100); total-body Potassium is severely depleted despite normal/high initial serum K+.",
+                treatment: "- 1) Aggressive IV Fluid Resuscitation: Start 0.9% Normal Saline or Ringer's Lactate (15-20 mL/kg in 1st hour, then 250-500 mL/hr); switch to Dextrose 5% + 0.45% NaCl once Blood Glucose drops to 200-250 mg/dL.\n- 2) Potassium Replacement BEFORE/WITH Insulin: If K+ < 3.3 mEq/L, HOLD insulin and give 20-40 mEq/hr KCl; if K+ 3.3-5.2, add 20-30 mEq KCl per Liter of IV fluid.\n- 3) Continuous IV Regular Insulin Infusion (0.1 Units/kg/hr): Continue insulin drip (reduced to 0.05 U/kg/hr with D5W) until Anion Gap closes (< 12) and pH > 7.30.",
+                complications: "- Cerebral Edema (from rapid osmolality drop -> headache, bradycardia, falling GCS), Fatal Hypokalemic Arrhythmias, Rebound Ketoacidosis (if IV insulin stopped before SC basal insulin), and Venous Thrombosis.",
+                redFlags: "- NEVER stop the IV Insulin infusion just because Blood Glucose normalizes (< 200 mg/dL) -> add D5W and continue insulin until Ketones and the Anion Gap clear! Always administer Subcutaneous Basal Insulin (Glargine) 2 to 4 hours BEFORE turning off the IV insulin pump."
+            },
+            {
+                match: ["gastrointestinal bleeding", "variceal", "hepatic encephalopathy", "liver failure", "cirrhosis"],
+                title: "Massive GI / Variceal Bleeding & Hepatic Encephalopathy",
+                definition: "Acute life-threatening upper or lower gastrointestinal hemorrhage (most critically from ruptured gastroesophageal varices in portal hypertension) and neuropsychiatric brain dysfunction (Hepatic Encephalopathy) caused by portosystemic shunting of gut-derived neurotoxins (Ammonia).",
+                etiology: "- Decompensated Liver Cirrhosis (Child-Pugh C) with Portal Hypertension -> Esophageal/Gastric Varices.\n- Peptic Ulcer Disease (H. pylori, NSAIDs, or ICU Stress Ulcer).\n- Precipitants of Hepatic Encephalopathy: GI bleeding (high protein load in gut), Constipation, Hypokalemia/Alkalosis, Infection (SBP), Dehydration/Diuretics, or Sedatives.",
+                symptoms: "- Hematemesis (vomiting bright red blood or coffee-ground emesis), Melena (black tarry foul-smelling stools), or Hematochezia.\n- Jaundice, Tense Ascites, caput medusae, spider angiomas, confusion/stupor (Grade I-IV Encephalopathy), and Asterixis (flapping hand tremor).",
+                investigations: "- CBC & Coagulation: Acute drop in Hemoglobin (< 7-8 g/dL), Thrombocytopenia (Platelets < 70k from hypersplenism), and Prolonged PT/INR (> 2.0 from impaired hepatic synthesis).\n- Liver & Renal Panel: Elevated Bilirubin, Low Albumin (< 2.5 g/dL), Elevated Arterial Ammonia (> 100 umol/L), High BUN/Cr ratio (upper GI blood digestion or Hepatorenal Syndrome), and Hypoglycemia.\n- Urgent Upper GI Endoscopy (EGD): Identifies bleeding esophageal varices or Forrest Class Ia/Ib peptic ulcer.",
+                treatment: "- Variceal Bleed Bundle: Vasoactive Splanchnic Vasoconstrictor (Octreotide 50 mcg/hr drip or Terlipressin 1-2 mg IV q4-6h) + High-dose PPI (Pantoprazole 80mg bolus then 8 mg/hr drip) + Mandatory Ceftriaxone 1g IV q24h (prevents SBP) + Urgent Endoscopic Variceal Band Ligation.\n- Restrictive Blood Transfusion: Transfuse PRBCs ONLY to target Hgb 7.0-8.0 g/dL.\n- Hepatic Encephalopathy: Lactulose (30-45 mL q6h via NGT or 300 mL Enema to achieve 3 soft stools/day) + Rifaximin 550 mg BID.",
+                complications: "- Exsanguinating Hemorrhagic Shock, Aspiration Pneumonia, Spontaneous Bacterial Peritonitis (SBP), Hepatorenal Syndrome (HRS-AKI), and Cerebral Edema.",
+                redFlags: "- DO NOT over-transfuse cirrhotic variceal bleeders above Hgb 8.0 g/dL (excess blood volume directly increases portal venous pressure and causes fatal variceal re-rupture!).\n- Strictly avoid Benzodiazepines, Opioids, and NSAIDs, and monitor blood glucose q2h for silent cirrhotic hypoglycemia."
+            },
+            {
+                match: ["pancreatitis", "perforation", "peritonitis", "mesenteric ischemia"],
+                title: "Abdominal ICU: Severe Acute Pancreatitis, Peritonitis & Mesenteric Ischemia",
+                definition: "Catastrophic intra-abdominal surgical/medical emergencies characterized by autodigestion (Pancreatitis), hollow-viscus contamination (Perforation/Peritonitis), or splanchnic vascular occlusion (Mesenteric Ischemia), triggering massive retroperitoneal/peritoneal third-space fluid loss, SIRS, and septic shock.",
+                etiology: "- Acute Pancreatitis: Gallstones (40%), Alcohol, Severe Hypertriglyceridemia (> 1000 mg/dL), or ERCP.\n- Bowel Perforation / Peritonitis: Perforated peptic ulcer, diverticulitis, appendicitis, or anastomotic leak.\n- Acute Mesenteric Ischemia: Superior Mesenteric Artery (SMA) embolism from Atrial Fibrillation (50%), SMA thrombosis, or Non-Occlusive Mesenteric Ischemia (NOMI) from high-dose vasopressors.",
+                symptoms: "- Severe epigastric pain radiating to the back (Pancreatitis), board-like abdominal rigidity with rebound tenderness (Peritonitis), or 'severe abdominal pain out of proportion to physical exam findings' (Mesenteric Ischemia).\n- Intractable vomiting, absent bowel sounds (paralytic ileus), tense abdominal distension, fever, tachycardia, and profound hypovolemic/septic shock.",
+                investigations: "- Labs: Serum Lipase & Amylase > 3x upper limit of normal (Pancreatitis); Severe Lactic Acidosis (Lactate > 4-8 mmol/L) and marked Leukocytosis (WBC > 20k) in Mesenteric Ischemia/Peritonitis.\n- Electrolyte Hallmark in Severe Pancreatitis: Hypocalcemia (Ca++ < 7.5 mg/dL due to retroperitoneal fat saponification) and hemoconcentration (high Hct).\n- Contrast CT Abdomen / CT Angiography: Pancreatic necrosis/peripancreatic fluid collections, free intraperitoneal air under diaphragm (Pneumoperitoneum), or SMA filling defect with pneumatosis intestinalis (bowel wall gas).",
+                treatment: "- Aggressive Goal-Directed IV Fluid Resuscitation with Ringer's Lactate (preferred over Normal Saline in Pancreatitis) to replace massive third-space losses.\n- Broad-spectrum IV Antibiotics (Meropenem or Piperacillin/Tazobactam) for peritonitis, mesenteric ischemia, or infected pancreatic necrosis (do not give prophylactic antibiotics in sterile mild pancreatitis).\n- Multimodal IV Analgesia (Fentanyl), NGT decompression (for ileus), Early Enteral Nutrition (via nasojejunal/NGT once resuscitated), and Emergent Exploratory Laparotomy (for perforation or ischemic bowel).",
+                complications: "- Abdominal Compartment Syndrome (Intra-Abdominal Pressure IAP > 20 mmHg causing anuric renal failure and high ventilator pressures), ARDS, Pancreatic Abscess/Pseudocyst, Short Bowel Syndrome, and MODS.",
+                redFlags: "- Measure Intra-Abdominal Pressure (IAP) via the Foley catheter bladder transducer every 4-6 hours (Normal: 5-7 mmHg; Intra-Abdominal Hypertension >= 12 mmHg; Abdominal Compartment Syndrome > 20 mmHg requiring surgical decompression)."
+            },
+            {
+                match: ["overdose", "toxicity", "carbon monoxide", "burns", "hyperthermia", "hypothermia", "anaphylaxis", "polytrauma"],
+                title: "Toxicology, Major Burns, Anaphylaxis, Environmental & Polytrauma ICU",
+                definition: "Critical care management of acute toxicological poisonings, major thermal/inhalation burns (> 20-40% TBSA), life-threatening systemic hypersensitivity (Anaphylactic Shock), extreme core temperature emergencies, and multisystem high-energy trauma.",
+                etiology: "- Toxicology: Tricyclic Antidepressants (TCA), Paracetamol, Opioids, Organophosphates, or Carbon Monoxide (CO) smoke inhalation.\n- Major Burns & Polytrauma: Flame/scald/electrical burns, high-speed MVCs, or falls from height.\n- Anaphylaxis: IgE-mediated massive mast cell degranulation from IV antibiotics (Penicillin/Cephalosporins), IV contrast, or insect/food allergens.",
+                symptoms: "- Airway Edema & Stridor (in Anaphylaxis or Facial/Inhalation Burns with singed nasal hairs and carbonaceous sputum).\n- Toxidromes: Cholinergic SLUDGE + pinpoint pupils + bronchorrhea (Organophosphates); Coma + pinpoint pupils + bradypnea (Opioids); Seizures + widened QRS > 100 ms (TCA).\n- Severe distributive, hypovolemic, or hemorrhagic shock.",
+                investigations: "- ECG & ABG with Co-Oximetry: QRS duration > 100 ms (predicts seizures/ventricular arrhythmias in TCA overdose); Carboxyhemoglobin (COHb > 15-25% in CO poisoning) and high Lactate (> 8 mmol/L suggests concomitant Cyanide toxicity in house fires).\n- Labs: Serum Paracetamol level (plotted on Rumack-Matthew nomogram at 4h), Creatine Kinase (CK > 10,000 U/L & dark tea-colored myoglobinuria in Rhabdomyolysis/Burns/Crush trauma), and Coagulation profile.",
+                treatment: "- Specific Antidotes & Protocols: 1) Paracetamol -> IV N-Acetylcysteine (NAC); 2) TCA QRS > 100ms -> IV Sodium Bicarbonate 8.4% boluses to target pH 7.45-7.55; 3) Organophosphate -> IV Atropine + Pralidoxime; 4) Opioid -> IV Naloxone; 5) CO Poisoning -> 100% FiO2 via ETT / Hyperbaric O2 (+ Hydroxocobalamin for Cyanide); 6) Anaphylaxis -> Immediate IM/IV Epinephrine + Airway Intubation + IV Fluids + Hydrocortisone.\n- Major Burns Parkland Formula: 4 mL Ringer's Lactate x Weight (kg) x %TBSA burn (Give 50% in first 8 hours from time of burn, remaining 50% over next 16 hours; titrate to UOP 0.5-1 mL/kg/hr).",
+                complications: "- Complete Upper Airway Obstruction from Laryngeal Edema, Compartment Syndrome of extremities/abdomen, Rhabdomyolysis-induced AKI, Curling's Gastric Ulcer, and Burn Wound Sepsis.",
+                redFlags: "- PULSE OXIMETRY TRAP: Standard SpO2 monitors cannot distinguish Carboxyhemoglobin from Oxyhemoglobin and will read a FALSELY NORMAL 99-100% in severe Carbon Monoxide poisoning -> always check ABG Co-Oximetry!\n- BURN PARALYTIC CONTRAINDICATION: Never give Succinylcholine > 24h after major burns or crush trauma (causes lethal hyperkalemic arrest)."
+            }
+        ];
+
+        // =========================================================================
+        // 3. COMPREHENSIVE ICU MEDICATION DILUTION & CLINICAL DATABASE
+        // =========================================================================
+        const DRUG_DATABASE = {
+            "norepinephrine": {
+                title: "Norepinephrine (Levophed)",
+                active: "Norepinephrine Bitartrate",
+                brand: "Levophed, Noradrenaline, Norpenin (4 mg / 4 mL or 8 mg / 4 mL Ampoule)",
+                uses: "1. First-line Vasopressor in Septic Shock (Target MAP >= 65 mmHg)\n2. Severe Hypotension in Cardiogenic & Neurogenic Shock\n3. Maintaining Cerebral Perfusion Pressure (CPP) in Severe TBI",
+                compat: "Glucose 5% (D5W) is preferred (prevents oxidation) | Normal Saline 0.9% (Acceptable) | Ringer's Lactate (Not recommended for dilution).",
+                volumes: "Standard ICU Syringe Pump: 4 mg or 8 mg diluted in 50 mL D5W (or 8 mg in 250 mL D5W IV bag).",
+                nursing: "Administer via Central Venous Catheter (CVC) to prevent severe tissue necrosis/extravasation (Antidote for extravasation: Subcutaneous Phentolamine)."
+            },
+            "vasopressin": {
+                title: "Vasopressin",
+                active: "Synthetic Arginine Vasopressin (ADH)",
+                brand: "Pitressin, Vasosep, Pressin (20 Units / 1 mL Ampoule)",
+                uses: "1. Second-line Vasopressor in Refractory Septic Shock (added to spare Norepinephrine)\n2. Refractory Vasoplegic Shock Post-Cardiac Surgery\n3. Esophageal Variceal Bleeding / Diabetes Insipidus",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W) (Preferred) | Ringer's Lactate (Avoid).",
+                volumes: "20 Units diluted in 50 mL Normal Saline or D5W (Concentration: 0.4 Units/mL) infused at fixed rate 0.03 Units/min (4.5 mL/hr).",
+                nursing: "Do not titrate up > 0.04 Units/min in septic shock due to risk of cardiac, digital, and splanchnic ischemia."
+            },
+            "propofol": {
+                title: "Propofol",
+                active: "Propofol (2,6-diisopropylphenol)",
+                brand: "Diprivan 1%, Propofol Lipuro, Provive (200 mg / 20 mL or 500 mg / 50 mL Vial)",
+                uses: "1. Continuous ICU Sedation for Mechanically Ventilated Patients\n2. Refractory Status Epilepticus (Burst-Suppression)\n3. Intracranial Pressure (ICP) Reduction in Neuro-ICU\n4. Bronchodilatory Sedation in Status Asthmaticus / COPD",
+                compat: "Infused UNDILUTED (10 mg/mL lipid emulsion). If dilution is strictly needed: Glucose 5% ONLY (never dilute below 2 mg/mL).",
+                volumes: "50 mL pre-filled syringe pump (500 mg / 50 mL) infused directly.",
+                nursing: "Change IV tubing every 12 hours (strict aseptic technique due to lipid emulsion). Monitor Serum Triglycerides, BP, and watch for Propofol Infusion Syndrome (PRIS)."
+            },
+            "dexmedetomidine": {
+                title: "Dexmedetomidine (Precedex)",
+                active: "Dexmedetomidine Hydrochloride",
+                brand: "Precedex, Dexdor (200 mcg / 2 mL Vial)",
+                uses: "1. Cooperative 'Awake' ICU Sedation (Target RASS 0 to -2)\n2. Fast-Track Ventilator Weaning & Extubation (No respiratory depression)\n3. ICU Delirium & Agitation Control",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W) (Compatible) | Ringer's Lactate (Compatible).",
+                volumes: "200 mcg (2 mL) diluted in 48 mL Normal Saline 0.9% to total 50 mL (Concentration: 4 mcg/mL).",
+                nursing: "Watch closely for Sinus Bradycardia and Hypotension; avoid rapid IV loading boluses in hemodynamically unstable patients."
+            },
+            "fentanyl": {
+                title: "Fentanyl",
+                active: "Fentanyl Citrate",
+                brand: "Fentanyl-Hameln, Fentanyl Janssen (100 mcg / 2 mL or 500 mcg / 10 mL Ampoule)",
+                uses: "1. First-line ICU Analgesia for Intubated / Post-Op / Trauma Patients\n2. Blunting Sympathetic ICP Spikes in Traumatic Brain Injury\n3. Safe Opioid in Renal Failure & Bronchospasm (No histamine release)",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W) (Preferred).",
+                volumes: "500 mcg (10 mL) diluted in 40 mL Normal Saline to total 50 mL (10 mcg/mL) or infused undiluted (50 mcg/mL) @ 1-3 mL/hr.",
+                nursing: "Monitor respiratory drive, bowel motility (causes ileus/constipation), and chest wall rigidity with rapid high doses."
+            },
+            "remifentanil": {
+                title: "Remifentanil (Ultiva)",
+                active: "Remifentanil Hydrochloride",
+                brand: "Ultiva (1 mg, 2 mg, or 5 mg Lyophilized Vial)",
+                uses: "1. Ultra-Short-Acting Analgesia in Neuro-ICU (Allows rapid neurological wake-up within 3-5 min)\n2. Post-Cardiac Surgery Fast-Track Weaning",
+                compat: "Reconstitute with Sterile Water or Normal Saline, then dilute in Normal Saline 0.9% or Glucose 5% (Do NOT dilute in Ringer's Lactate - hydrolyzes drug).",
+                volumes: "2 mg or 5 mg diluted in 50 mL Normal Saline 0.9%.",
+                nursing: "Metabolized by plasma esterases (independent of liver/kidney function). Never give IV bolus on infusion line."
+            },
+            "pantoprazole": {
+                title: "Pantoprazole (Controloc)",
+                active: "Pantoprazole Sodium Sesquihydrate",
+                brand: "Controloc IV, Zurcal, Pantoloc, Protium (40 mg Vial)",
+                uses: "1. Stress Ulcer Prophylaxis in Mechanically Ventilated / Coagulopathic ICU Patients\n2. Acute Upper GI Bleeding (Peptic Ulcer / Gastritis)\n3. Prevention of Cushing's Ulcer (TBI) & Curling's Ulcer (Major Burns)",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W) (Compatible) | Ringer's Lactate (Compatible).",
+                volumes: "IV Push: Reconstitute 40 mg vial with 10 mL Normal Saline 0.9% over 2-5 min.\nGI Bleed Continuous Drip: 80 mg (2 vials) diluted in 100 mL Normal Saline infused at 8 mg/hr (10 mL/hr).",
+                nursing: "Use inline filter if required; solution turns yellowish upon standing (discard if precipitates form)."
+            },
+            "meropenem": {
+                title: "Meropenem (Meronem)",
+                active: "Meropenem Trihydrate",
+                brand: "Meronem, Meropen, Mirapinem (500 mg or 1 g Vial)",
+                uses: "1. Empiric Broad-Spectrum Therapy in Septic Shock\n2. Ventilator-Associated Pneumonia (VAP) & ESBL Gram-Negative Infections\n3. Generalized Peritonitis / Necrotizing Pancreatitis / Bacterial Meningitis",
+                compat: "Normal Saline 0.9% (Preferred - stable up to 4-8 hrs) | Glucose 5% (Less stable - use within 1 hr).",
+                volumes: "Reconstitute 1 g vial with 20 mL Sterile Water, then dilute in 100 mL Normal Saline 0.9% (Infuse over 3 hours as Extended Infusion in Septic Shock).",
+                nursing: "Adjust dose in Renal Impairment (CrCl < 50 mL/min); draw blood cultures BEFORE first dose."
+            },
+            "aztreonam": {
+                title: "Aztreonam (Azactam)",
+                active: "Aztreonam (Monobactam Antibiotic)",
+                brand: "Azactam, Aztreonam (1 g or 2 g Vial)",
+                uses: "1. Severe Gram-Negative Sepsis / Pneumonia in Patients with Severe Penicillin Anaphylaxis\n2. Complicated UTI & Intra-abdominal Infections",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | Ringer's Lactate.",
+                volumes: "1 g or 2 g diluted in 50 to 100 mL Normal Saline 0.9% or D5W infused over 30-60 minutes.",
+                nursing: "Safe in Penicillin allergy (except rare cross-reactivity with Ceftazidime)."
+            },
+            "levofloxacin": {
+                title: "Levofloxacin (Tavanic)",
+                active: "Levofloxacin Hemihydrate",
+                brand: "Tavanic IV, Lee-Flox, Venaxan (500 mg / 100 mL or 750 mg / 150 mL Bottle)",
+                uses: "1. Severe Community-Acquired Pneumonia & AECOPD\n2. Atypical Respiratory Pathogens (Legionella, Mycoplasma)\n3. Complicated Urinary Tract Infection / Urosepsis",
+                compat: "Supplied as Ready-to-Use Premixed IV Bag in 0.9% Normal Saline or D5W (Do not mix with divalent cations like Mg++ or Ca++ in same line).",
+                volumes: "100 mL (500 mg) or 150 mL (750 mg) ready-to-use infusion bottle.",
+                nursing: "Infuse slowly over 60 to 90 minutes (rapid infusion causes hypotension). Monitor QTc interval on ECG."
+            },
+            "vancomycin": {
+                title: "Vancomycin (Vancocin)",
+                active: "Vancomycin Hydrochloride",
+                brand: "Vancocin, Vancolon, Vancocip (500 mg or 1 g Vial)",
+                uses: "1. MRSA Pneumonia, Bacteremia, and Septic Shock\n2. Catheter-Related Bloodstream Infections (CRBSI)\n3. Post-Neurosurgical / Craniotomy Meningitis Prophylaxis & Treatment",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W) (Preferred) | Ringer's Lactate (Compatible).",
+                volumes: "500 mg diluted in 100 mL NS/D5W | 1 g diluted in 200 to 250 mL NS/D5W (Max concentration <= 5 mg/mL).",
+                nursing: "NEVER give IV Push! Infuse slowly over at least 60-120 minutes to prevent Red Man Syndrome (histamine flushing/hypotension). Check serum Vancomycin Trough level before 4th dose."
+            },
+            "hydrocortisone": {
+                title: "Hydrocortisone (Solu-Cortef)",
+                active: "Hydrocortisone Sodium Succinate",
+                brand: "Solu-Cortef, Hydrocortisone Roussel (100 mg Vial)",
+                uses: "1. Vasopressor-Refractory Septic Shock (200 mg/day protocol)\n2. Anaphylactic Shock & Severe Status Asthmaticus\n3. Acute Adrenal Crisis",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | Sterile Water for Injection.",
+                volumes: "IV Push: Reconstitute 100 mg vial in 2 mL Sterile Water or 10 mL Normal Saline over 1-2 min.\nIV Infusion: Dilute in 50-100 mL Normal Saline or D5W.",
+                nursing: "Monitor blood glucose q6h (causes hyperglycemia) and serum potassium/sodium."
+            },
+            "heparin": {
+                title: "Unfractionated Heparin",
+                active: "Heparin Sodium",
+                brand: "Heparin Leo, Calciparine, Heparin (5000 IU / mL Vial or Ampoule)",
+                uses: "1. DVT Prophylaxis in ICU Patients with Renal Failure (AKI / ESRD)\n2. Therapeutic Anticoagulation in Massive Pulmonary Embolism & STEMI\n3. Continuous Renal Replacement Therapy (CRRT) Circuit Anticoagulation",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W).",
+                volumes: "DVT Prophylaxis: 5000 Units (1 mL) Subcutaneously q8h-q12h.\nContinuous IV Drip: 25,000 Units in 50 mL NS (500 U/mL) via syringe pump or in 250 mL NS (100 U/mL).",
+                nursing: "Monitor aPTT every 6 hours for IV drip (Target 60-85 sec) and check Platelet count daily for Heparin-Induced Thrombocytopenia (HIT). Antidote: Protamine Sulfate."
+            },
+            "enoxaparin": {
+                title: "Enoxaparin (Clexane)",
+                active: "Enoxaparin Sodium (LMWH)",
+                brand: "Clexane, Lovenox (20 mg, 40 mg, 60 mg, 80 mg Pre-filled Syringes)",
+                uses: "1. First-line Venous Thromboembolism (DVT/PE) Prophylaxis in ICU\n2. Acute Coronary Syndrome (STEMI / NSTEMI)\n3. Therapeutic DVT / PE Treatment",
+                compat: "Pre-filled Subcutaneous Syringe (Do NOT dilute and do NOT expel air bubble before SC injection).",
+                volumes: "40 mg / 0.4 mL SC once daily (or q12h in high-risk trauma/ARDS/obesity).",
+                nursing: "Contraindicated or requires dose reduction to 20-30 mg if Creatinine Clearance < 30 mL/min (Switch to SC Unfractionated Heparin in AKI)."
+            },
+            "ipratropium": {
+                title: "Ipratropium Bromide (Atrovent)",
+                active: "Ipratropium Bromide (Anticholinergic Bronchodilator)",
+                brand: "Atrovent Nebulizer Solution, Combivent (0.5 mg / 2 mL Unit-Dose Vial)",
+                uses: "1. Acute COPD Exacerbation\n2. Acute Severe Asthma Exacerbation (adjunct to Salbutamol)\n3. Bronchospasm in Mechanically Ventilated Patients",
+                compat: "Normal Saline 0.9% ONLY for nebulizer chamber dilution (Never for IV use!).",
+                volumes: "0.5 mg (2 mL) + 2 mL Normal Saline 0.9% (Total 4 mL in nebulizer cup or inline ventilator nebulizer).",
+                nursing: "Protect patient's eyes from nebulizer mist (causes pupil dilation/mydriasis and acute angle-closure glaucoma)."
+            },
+            "salbutamol": {
+                title: "Salbutamol (Farcolin / Ventolin)",
+                active: "Salbutamol Sulfate (Albuterol - Beta-2 Agonist)",
+                brand: "Farcolin Solution, Ventolin Nebules (2.5 mg or 5 mg Nebulizer Solution)",
+                uses: "1. First-line Bronchodilator in Status Asthmaticus & COPD Exacerbation\n2. Acute Hyperkalemia (10-20 mg nebulized shifts K+ into cells)\n3. Anaphylactic Bronchospasm",
+                compat: "Normal Saline 0.9% ONLY for nebulizer dilution.",
+                volumes: "2.5 mg to 5 mg diluted in 3 mL Normal Saline 0.9% via inline nebulizer q2-6h.",
+                nursing: "Causes Sinus Tachycardia, tremors, and intracellular Potassium shift (monitor ECG and Serum K+)."
+            },
+            "chlorhexidine": {
+                title: "Chlorhexidine 0.12% Oral Care",
+                active: "Chlorhexidine Gluconate 0.12%",
+                brand: "Hexitol, Antiseptol, Listermix Plus Mouthwash",
+                uses: "1. Mandatory Ventilator-Associated Pneumonia (VAP) Prevention Bundle\n2. Oropharyngeal Decontamination in Intubated ICU Patients",
+                compat: "Topical Oral Swab Solution (Undiluted).",
+                volumes: "15 mL swabbed across oral cavity, gums, tongue, and ETT exterior every 6 to 8 hours.",
+                nursing: "Perform subglottic suctioning above ETT cuff prior to and after oral care."
+            },
+            "paracetamol": {
+                title: "Paracetamol IV (Perfalgan)",
+                active: "Paracetamol (Acetaminophen)",
+                brand: "Perfalgan, Cetal IV, Abimol IV, Infulgan (1 g / 100 mL Vial)",
+                uses: "1. Fever Control in Sepsis, Neuro-ICU (TBI/Stroke), and Post-Arrest TTM\n2. Multimodal Opioid-Sparing Analgesia (Post-CABG, Trauma, Chest Tubes)",
+                compat: "Supplied as Ready-to-Use 100 mL IV Infusion Bottle (10 mg/mL) - Infuse directly without further dilution.",
+                volumes: "100 mL bottle (1000 mg) infused over 15 minutes.",
+                nursing: "Maximum daily dose 4 g/day (reduce to 2 g/day or avoid in severe Hepatic Failure / Cirrhosis). Monitor BP as rapid IV paracetamol can drop MAP in septic patients."
+            },
+            "cisatracurium": {
+                title: "Cisatracurium (Nimbex)",
+                active: "Cisatracurium Besylate (Non-depolarizing Neuromuscular Blocker)",
+                brand: "Nimbex, Cisatracurium Hameln (10 mg / 5 mL or 20 mg / 10 mL Ampoule)",
+                uses: "1. Severe ARDS (P/F < 100) to eliminate ventilator dyssynchrony and facilitate Prone Positioning\n2. Refractory Intracranial Hypertension (ICP)\n3. Therapeutic Hypothermia Shivering Control",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W) (Preferred) | Do NOT dilute in Ringer's Lactate (inactivated at alkaline pH).",
+                volumes: "Infused undiluted (2 mg/mL) or 100 mg diluted in 100 mL Normal Saline/D5W (1 mg/mL).",
+                nursing: "Underwent Hofmann elimination (safe in liver & kidney failure). CRITICAL: Ensure deep sedation (RASS -5) and analgesia BEFORE starting paralysis, and apply eye lubricant + eyelid tape."
+            },
+            "midazolam": {
+                title: "Midazolam (Dormicum)",
+                active: "Midazolam Hydrochloride (Benzodiazepine)",
+                brand: "Dormicum, Midathetic (5 mg / 1 mL or 15 mg / 3 mL Ampoule)",
+                uses: "1. First-line Termination of Status Epilepticus\n2. Deep Sedation (RASS -4 to -5) during Neuromuscular Blockade in Severe ARDS\n3. Procedural Sedation / Intubation",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W) (Compatible) | Ringer's Lactate (Compatible).",
+                volumes: "45 mg or 50 mg diluted in 50 mL Normal Saline 0.9% (Concentration: 1 mg/mL).",
+                nursing: "Active metabolite accumulates in Renal Failure causing prolonged coma; increases ICU delirium risk compared to Propofol/Dexmedetomidine. Antidote: Flumazenil."
+            },
+            "piperacillin": {
+                title: "Piperacillin / Tazobactam (Tazocin)",
+                active: "Piperacillin 4 g + Tazobactam 0.5 g",
+                brand: "Tazocin, Tapectam, Pipraks (4.5 g Vial)",
+                uses: "1. Hospital-Acquired & Aspiration Pneumonia / Severe ARDS\n2. Intra-abdominal Sepsis, Peritonitis, and Biliary Infections\n3. Empiric Pseudomonas & Anaerobic Coverage",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W) (Compatible) | Do NOT mix with Ringer's Lactate containing Calcium or Aminoglycosides in same line.",
+                volumes: "Reconstitute 4.5 g vial with 20 mL Sterile Water/NS, then dilute in 100 mL Normal Saline 0.9% (Infuse over 30 min or 4-hr extended infusion).",
+                nursing: "Check Penicillin allergy history prior to administration; adjust dose in renal dysfunction."
+            },
+            "cefepime": {
+                title: "Cefepime (Maxipime)",
+                active: "Cefepime Hydrochloride (4th-Gen Cephalosporin)",
+                brand: "Maxipime, Wincef, Pimfast (1 g or 2 g Vial)",
+                uses: "1. Nosocomial / Ventilator-Associated Pneumonia (Pseudomonas coverage)\n2. Febrile Neutropenia & Severe Sepsis",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | Ringer's Lactate.",
+                volumes: "1 g or 2 g diluted in 50 to 100 mL Normal Saline 0.9% infused over 30 minutes.",
+                nursing: "Monitor for neurotoxicity (myoclonus, encephalopathy, non-convulsive status epilepticus) if not renally adjusted in AKI."
+            },
+            "clindamycin": {
+                title: "Clindamycin (Dalacin C)",
+                active: "Clindamycin Phosphate",
+                brand: "Dalacin C, Clinimycin (300 mg / 2 mL or 600 mg / 4 mL Ampoule)",
+                uses: "1. Aspiration Pneumonia & Lung Abscess (Anaerobic coverage)\n2. Necrotizing Fasciitis / Toxic Shock Syndrome (Inhibits bacterial toxin production)",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | Ringer's Lactate.",
+                volumes: "600 mg diluted in 50 to 100 mL Normal Saline 0.9% or D5W infused over 20-30 minutes (Never give IV bolus!).",
+                nursing: "Monitor closely for severe watery diarrhea (Clostridioides difficile colitis)."
+            },
+            "dexamethasone": {
+                title: "Dexamethasone (Epidron / Dexaglobe)",
+                active: "Dexamethasone Sodium Phosphate",
+                brand: "Epidron, Dexaglobe, Orazone, Decadron (8 mg / 2 mL Ampoule)",
+                uses: "1. Severe ARDS Steroid Protocol (DEXA-ARDS)\n2. Vasogenic Cerebral Edema & Bacterial Meningitis\n3. Airway / Laryngeal Edema Prophylaxis Pre-Extubation (Cuff Leak Test)",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W).",
+                volumes: "IV Push over 2-3 minutes or diluted in 50 mL Normal Saline 0.9%.",
+                nursing: "Long-acting corticosteroid with zero mineralocorticoid activity (does not cause sodium/water retention); monitor blood glucose."
+            },
+            "methylprednisolone": {
+                title: "Methylprednisolone (Solu-Medrol)",
+                active: "Methylprednisolone Sodium Succinate",
+                brand: "Solu-Medrol (40 mg, 125 mg, 500 mg, 1000 mg Vial)",
+                uses: "1. Status Asthmaticus & Severe COPD Exacerbation\n2. Fibroproliferative ARDS\n3. Acute Anaphylactic Shock & Autoimmune Crises",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W).",
+                volumes: "40-60 mg reconstituted in 2-5 mL Sterile Water for slow IV push, or diluted in 50-100 mL Normal Saline 0.9%.",
+                nursing: "Always co-prescribe PPI (Pantoprazole) and monitor blood glucose q6h and serum Potassium."
+            },
+            "furosemide": {
+                title: "Furosemide (Lasix)",
+                active: "Furosemide (Loop Diuretic)",
+                brand: "Lasix, Lafurex, Salex (20 mg / 2 mL or 40 mg / 4 mL Ampoule; 250 mg / 25 mL Vial)",
+                uses: "1. Acute Cardiogenic Pulmonary Edema & Decompensated Heart Failure\n2. Conservative Fluid Management in ARDS\n3. Hyperkalemia & Hypercalcemia Washout",
+                compat: "Normal Saline 0.9% (Preferred) | Ringer's Lactate (Compatible) | Avoid acidic Glucose solutions (pH < 5.5 causes precipitation).",
+                volumes: "IV Push: 20-80 mg undiluted slow IV push (max rate 20 mg/min).\nContinuous Drip: 100 mg (10 mL) diluted in 40 mL Normal Saline (Total 50 mL = 2 mg/mL) @ 5-20 mg/hr.",
+                nursing: "Monitor hourly Urine Output, Blood Pressure, and Serum Potassium & Magnesium (causes rapid hypokalemia/hypomagnesemia & ototoxicity if pushed too fast)."
+            },
+            "metoclopramide": {
+                title: "Metoclopramide (Primperan)",
+                active: "Metoclopramide Hydrochloride (Prokinetic & Antiemetic)",
+                brand: "Primperan, Meclopran (10 mg / 2 mL Ampoule)",
+                uses: "1. ICU Gastric Stasis / High Nasogastric Residual Volume (GRV) Prokinetic\n2. Facilitating Enteral Feeding during Prone Positioning\n3. Nausea & Vomiting",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | Ringer's Lactate.",
+                volumes: "10 mg diluted in 50 mL Normal Saline infused over 15 minutes (or slow IV push over 3 minutes).",
+                nursing: "Watch for extrapyramidal symptoms (acute dystonia/akathisia) and QT prolongation; contraindicated in bowel obstruction/perforation."
+            },
+            "acetylcysteine": {
+                title: "N-Acetylcysteine (Mucomyst / Rotacysteine)",
+                active: "N-Acetylcysteine (NAC)",
+                brand: "Rotacysteine, Fluimucil, Acetylcysteine, Hidonac (300 mg / 3 mL Ampoule or 20% Vial)",
+                uses: "1. Specific Antidote for Paracetamol (Acetaminophen) Overdose & Acute Liver Failure\n2. Mucolytic Nebulizer for Thick Tenacious Secretions in Intubated Patients",
+                compat: "IV Antidote Protocol: Glucose 5% (D5W) Preferred (or 0.45% / 0.9% NaCl) | Nebulizer: Normal Saline 0.9%.",
+                volumes: "IV Paracetamol Overdose Protocol: Loading 150 mg/kg in 200 mL D5W over 60 min -> 50 mg/kg in 500 mL D5W over 4h -> 100 mg/kg in 1000 mL D5W over 16h.\nNebulizer: 300 mg (3 mL) + 2 mL NS.",
+                nursing: "Nebulized NAC can trigger acute bronchospasm in asthmatics (always co-administer with Salbutamol)."
+            },
+            "insulin": {
+                title: "Regular Insulin / Insulin Glargine",
+                active: "Soluble Human Insulin (Actrapid) / Insulin Glargine (Lantus)",
+                brand: "Actrapid HM, Humulin R (100 IU/mL Vial) | Lantus, Toujeo (Basal SC)",
+                uses: "1. Diabetic Ketoacidosis (DKA) & Hyperosmolar Hyperglycemic State (HHS)\n2. Life-Threatening Hyperkalemia (10 Units IV + 50 mL D50W shifts K+ into cells)\n3. ICU Stress Hyperglycemia (Target 140-180 mg/dL)",
+                compat: "Normal Saline 0.9% (Preferred for Continuous IV Pump).",
+                volumes: "50 Units Regular Insulin diluted in 50 mL Normal Saline 0.9% (Concentration: 1 Unit = 1 mL). Flush IV tubing with 20 mL prior to connecting to saturate plastic binding sites.",
+                nursing: "Check capillary Blood Glucose (Accu-Chek) every 1 hour on IV drip; HOLD insulin immediately if Serum K+ < 3.3 mEq/L. Overlap SC Basal Glargine 2-4h before stopping IV drip in DKA."
+            },
+            "potassium": {
+                title: "Potassium Chloride (KCl)",
+                active: "Potassium Chloride",
+                brand: "Potassium Chloride 15% Ampoule (1.5 g / 10 mL = 20 mEq K+)",
+                uses: "1. Correction of Hypokalemia in DKA, Diuretic Therapy, and Post-CABG\n2. Suppression of Ventricular Arrhythmias (Keep K+ > 4.0 mEq/L)",
+                compat: "Normal Saline 0.9% ONLY (Preferred - Avoid Glucose solutions initially in severe hypokalemia as dextrose stimulates insulin and worsens hypokalemia!).",
+                volumes: "Peripheral IV Line: Max 10 mEq diluted in 100 mL Normal Saline over 1 hour.\nCentral Line (CVC): 20 to 40 mEq diluted in 100 mL Normal Saline over 1-2 hours via infusion pump.",
+                nursing: "HIGH-ALERT MEDICATION: NEVER administer undiluted IV Push (causes immediate fatal cardiac arrest!). Always check Serum Magnesium concurrently."
+            },
+            "ondansetron": {
+                title: "Ondansetron (Zofran / Danset)",
+                active: "Ondansetron Hydrochloride (5-HT3 Antagonist)",
+                brand: "Zofran, Danset, Emerest (4 mg / 2 mL or 8 mg / 4 mL Ampoule)",
+                uses: "1. Severe Nausea & Vomiting in DKA, Uremia, Post-Op, and ICP\n2. Preventing Retching Strain post-CABG / Craniotomy / Variceal Bleed",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | Ringer's Lactate.",
+                volumes: "4 mg or 8 mg slow IV push over 2-5 minutes, or diluted in 50 mL Normal Saline over 15 minutes.",
+                nursing: "Monitor ECG for QTc interval prolongation (especially if hypokalemic or hypomagnesemic)."
+            },
+            "magnesium": {
+                title: "Magnesium Sulfate (MgSO4)",
+                active: "Magnesium Sulfate Heptahydrate",
+                brand: "Magnesium Sulfate 10% (1 g / 10 mL) or 50% (5 g / 10 mL) Ampoule",
+                uses: "1. Severe Refractory Status Asthmaticus / Bronchospasm (Smooth muscle relaxant)\n2. Torsades de Pointes (Polymorphic VT) & Post-CABG Arrhythmia Prophylaxis\n3. Hypomagnesemia in DKA / Diuresis & Eclampsia",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | Do NOT mix with Sodium Bicarbonate.",
+                volumes: "2 g diluted in 50 to 100 mL Normal Saline 0.9% or D5W infused over 20-60 minutes (or over 2-5 min in Pulseless Torsades).",
+                nursing: "Rapid infusion causes flushing, hypotension, and loss of deep tendon reflexes (Antidote for Mg toxicity: IV Calcium Gluconate)."
+            },
+            "ceftriaxone": {
+                title: "Ceftriaxone (Rocephin / Ceftriaxone)",
+                active: "Ceftriaxone Sodium (3rd-Gen Cephalosporin)",
+                brand: "Rocephin, Wincef, Cefaxone, Epicephin (1 g or 2 g Vial)",
+                uses: "1. Mandatory Prophylaxis in Cirrhotic Upper GI / Variceal Bleeding (Prevents SBP)\n2. Community-Acquired Pneumonia & Urosepsis\n3. Bacterial Meningitis (2 g IV q12h)",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | STRICT CONTRAINDICATION: NEVER mix or infuse simultaneously with Calcium-containing solutions (Ringer's Lactate / Calcium Gluconate) - forms fatal precipitates!",
+                volumes: "1 g or 2 g diluted in 50 to 100 mL Normal Saline 0.9% or D5W infused over 30 minutes.",
+                nursing: "Flush IV line thoroughly before and after if patient receives any calcium products."
+            },
+            "hypertonic": {
+                title: "3% Hypertonic Saline (NaCl 3%)",
+                active: "Hypertonic Sodium Chloride 3% (513 mEq/L)",
+                brand: "Hypertonic Saline 3% 500 mL Bag",
+                uses: "1. Elevated Intracranial Pressure (ICP) & Cerebral Edema in Severe TBI / Stroke\n2. Acute Symptomatic Severe Hyponatremia (Seizures / Coma)",
+                compat: "Ready-to-Use 3% NaCl Bag (Do not mix with other medications).",
+                volumes: "Bolus: 150-250 mL IV over 15-20 min | Continuous Drip: 30-50 mL/hr via Central Venous Catheter.",
+                nursing: "Infuse via CVC (hyperosmolar -> causes peripheral phlebitis). Check Serum Na+ every 4-6h (Keep Na+ 145-155 mEq/L in TBI; do not raise Na+ > 8 mEq/24h in chronic hyponatremia)."
+            },
+            "mannitol": {
+                title: "Mannitol 20%",
+                active: "Mannitol (Osmotic Diuretic)",
+                brand: "Mannitol 20% Otsuka / Eipico (100 g / 500 mL Bottle)",
+                uses: "1. Acute Intracranial Hypertension (ICP > 20 mmHg) & Impending Brain Herniation\n2. Forced Diuresis in Rhabdomyolysis",
+                compat: "Supplied as 20% Supersaturated Solution (Do NOT add electrolytes or medications -> causes immediate crystallization).",
+                volumes: "0.5 to 1 g/kg (150 to 250 mL of 20% solution) infused rapidly over 15-20 minutes via inline filter.",
+                nursing: "Inspect bottle for crystals before hanging (warm to dissolve if crystallized). Check Serum Osmolality q6h and HOLD if Osmolality > 320 mOsm/kg or Osmolar Gap > 20."
+            },
+            "levetiracetam": {
+                title: "Levetiracetam (Keppra / Tiratam)",
+                active: "Levetiracetam",
+                brand: "Keppra IV, Tiratam, Levepsy (500 mg / 5 mL Vial)",
+                uses: "1. Seizure Prophylaxis in Severe TBI, Subarachnoid Hemorrhage, and Craniotomy\n2. Second-line Agent in Status Epilepticus",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W) | Ringer's Lactate.",
+                volumes: "500 mg to 1500 mg diluted in 100 mL Normal Saline 0.9% infused over 15 minutes.",
+                nursing: "Minimal drug interactions and no hepatic enzyme induction; adjust dose in renal impairment."
+            },
+            "nimodipine": {
+                title: "Nimodipine (Nimotop)",
+                active: "Nimodipine (Cerebroselective Calcium Channel Blocker)",
+                brand: "Nimotop (30 mg Tablet / 10 mg/50 mL IV)",
+                uses: "1. Prevention of Cerebral Vasospasm & Delayed Cerebral Ischemia in Subarachnoid Hemorrhage (SAH)",
+                compat: "Administered Enterally via OGT/PO with 30 mL Normal Saline/Water flush.",
+                volumes: "60 mg (2 tablets crushed) via OGT every 4 hours for 21 days.",
+                nursing: "If blood pressure drops after 60 mg dose, split dose to 30 mg every 2 hours."
+            },
+            "dobutamine": {
+                title: "Dobutamine (Dobutrex)",
+                active: "Dobutamine Hydrochloride (Beta-1 Inotrope)",
+                brand: "Dobutrex, Dobutamine (250 mg / 20 mL Vial or 5 mL Ampoule)",
+                uses: "1. Cardiogenic Shock & Low Cardiac Output Syndrome\n2. Acute Decompensated Heart Failure (EF < 25%)\n3. Septic Myocardial Depression",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | Do NOT mix with Sodium Bicarbonate (alkaline inactivation).",
+                volumes: "250 mg diluted in 50 mL Normal Saline or D5W (Concentration: 5 mg/mL = 5000 mcg/mL).",
+                nursing: "Causes tachycardia and ventricular ectopy (PVCs/VT) -> keep K+ > 4.0 and Mg > 2.0. May slightly pinken over time due to harmless oxidation."
+            },
+            "nitroglycerin": {
+                title: "Nitroglycerin (Tridil / Nitronal)",
+                active: "Glyceryl Trinitrate",
+                brand: "Nitronal, Tridil (50 mg / 50 mL or 10 mg / 10 mL Ampoule)",
+                uses: "1. Flash Cardiogenic Pulmonary Edema & Acute Heart Failure (Reduces Preload)\n2. Acute Coronary Syndrome / Unstable Angina\n3. Post-CABG Coronary & Graft Spasm Prevention",
+                compat: "Glucose 5% (D5W) or Normal Saline 0.9% (Use non-PVC tubing or syringe pump).",
+                volumes: "50 mg in 50 mL syringe pump (1 mg/mL = 1000 mcg/mL) infused at 5 to 100 mcg/min.",
+                nursing: "Monitor BP continuously; hold if SBP < 90 mmHg. Strictly contraindicated in Right Ventricular Infarction or within 24-48h of Sildenafil."
+            },
+            "aspirin": {
+                title: "Aspirin (Jusprin / Aspocid)",
+                active: "Acetylsalicylic Acid",
+                brand: "Jusprin 81mg, Aspocid 75mg, Rivo, Aggrex",
+                uses: "1. Acute Myocardial Infarction (STEMI / NSTEMI) & Post-PCI Stents\n2. Post-CABG Saphenous Vein Graft Patency (within 6h post-op)\n3. Acute Ischemic Stroke (24h post-tPA)",
+                compat: "Oral / NGT Dispersible Tablet or Rectal Suppository.",
+                volumes: "Loading: 300 mg chewed/NGT | Maintenance: 75-100 mg daily suspended in 20 mL water via NGT.",
+                nursing: "Always co-administer with PPI (Pantoprazole) in ICU to prevent GI bleeding."
+            },
+            "clopidogrel": {
+                title: "Clopidogrel (Plavix) / Ticagrelor (Brilique)",
+                active: "Clopidogrel Bisulfate / Ticagrelor (P2Y12 Inhibitors)",
+                brand: "Plavix 75mg, Borgavix, Stroka | Brilique 90mg",
+                uses: "1. Dual Antiplatelet Therapy (DAPT) after Coronary Stent (PCI) & ACS\n2. Secondary Stroke Prevention",
+                compat: "Oral / NGT Suspension in water.",
+                volumes: "Clopidogrel 75 mg OD (Loading 300-600 mg) or Ticagrelor 90 mg BID crushed in 20 mL water via NGT.",
+                nursing: "Monitor puncture sites, gums, and NGT aspirate for bleeding; hold 5-7 days prior to major elective surgery."
+            },
+            "atorvastatin": {
+                title: "Atorvastatin (Lipitor / Ator)",
+                active: "Atorvastatin Calcium",
+                brand: "Lipitor, Ator, Borgastatin (40 mg or 80 mg Tablet)",
+                uses: "1. High-Intensity Plaque Stabilization in Acute Coronary Syndrome (STEMI/NSTEMI)\n2. Acute Ischemic Stroke & Post-CABG",
+                compat: "Oral / NGT.",
+                volumes: "80 mg crushed in 20 mL water via NGT once daily.",
+                nursing: "Monitor liver enzymes (AST/ALT) and Creatine Kinase (CK)."
+            },
+            "morphine": {
+                title: "Morphine Sulfate",
+                active: "Morphine Sulfate",
+                brand: "Morphine 10 mg / 1 mL or 20 mg / 1 mL Ampoule",
+                uses: "1. Refractory Ischemic Chest Pain in STEMI & Tearing Aortic Dissection Pain\n2. Severe Flash Pulmonary Edema (Relieves air hunger & anxiety)",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W).",
+                volumes: "Dilute 10 mg (1 mL) with 9 mL Normal Saline 0.9% (Concentration: 1 mg/mL) and administer 2-4 mg slow IV push.",
+                nursing: "Avoid in Asthma/COPD (histamine release causes bronchospasm) and Renal Failure (active metabolite M6G accumulates). Antidote: Naloxone."
+            },
+            "epinephrine": {
+                title: "Epinephrine (Adrenaline)",
+                active: "Epinephrine (Alpha & Beta Agonist)",
+                brand: "Adrenaline Misr / CID (1 mg / 1 mL Ampoule)",
+                uses: "1. First-line Drug of Choice in Anaphylactic Shock & Cardiac Arrest\n2. Post-CABG / Post-Bypass Myocardial Stunning & Cardiogenic Shock\n3. Severe Refractory Bradycardia",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | Do NOT mix with Sodium Bicarbonate.",
+                volumes: "Anaphylaxis IM: 0.5 mg IM in anterolateral thigh.\nICU Continuous Drip: 4 mg diluted in 50 mL Normal Saline or D5W (80 mcg/mL) @ 0.02-0.2 mcg/kg/min.",
+                nursing: "Increases serum Lactate (via beta-2 glycolysis), heart rate, and blood glucose; infuse via CVC."
+            },
+            "amiodarone": {
+                title: "Amiodarone (Cordarone)",
+                active: "Amiodarone Hydrochloride (Class III Antiarrhythmic)",
+                brand: "Cordarone IV, Sedacoron (150 mg / 3 mL Ampoule)",
+                uses: "1. Ventricular Tachycardia (VT) & VF Cardiac Arrest\n2. Rapid Atrial Fibrillation in Hemodynamically Unstable ICU Patients\n3. Post-CABG Atrial Fibrillation (POAF)",
+                compat: "Glucose 5% (D5W) ONLY! (Amiodarone precipitates in Normal Saline 0.9% at standard concentrations).",
+                volumes: "Loading Bolus: 150 mg (3 mL) diluted in 100 mL D5W over 10-15 min.\nMaintenance Drip: 900 mg (6 ampoules) diluted in 500 mL D5W (or 300 mg in 50 mL D5W via CVC) @ 1 mg/min for 6h then 0.5 mg/min for 18h.",
+                nursing: "Concentrations > 2 mg/mL MUST be infused via Central Venous Catheter (causes severe peripheral thrombophlebitis). Monitor QTc, BP, and liver enzymes."
+            },
+            "octreotide": {
+                title: "Octreotide (Sandostatin)",
+                active: "Octreotide Acetate (Somatostatin Analogue)",
+                brand: "Sandostatin, Octreotide (0.1 mg / 1 mL Ampoule)",
+                uses: "1. Acute Esophageal Variceal Hemorrhage (Reduces portal & splanchnic blood flow)\n2. Refractory Sulfonylurea-Induced Hypoglycemia\n3. High-Output Enterocutaneous / Pancreatic Fistulas",
+                compat: "Normal Saline 0.9% (Preferred) | Glucose 5% (D5W).",
+                volumes: "500 mcg (5 ampoules of 0.1 mg) diluted in 50 mL Normal Saline 0.9% (10 mcg/mL): Give 50 mcg bolus then infuse @ 50 mcg/hr (5 mL/hr) for 3-5 days.",
+                nursing: "Monitor blood glucose closely (inhibits both insulin and glucagon secretion)."
+            },
+            "lactulose": {
+                title: "Lactulose (Duphalac)",
+                active: "Lactulose (Non-absorbable Disaccharide)",
+                brand: "Duphalac, Lactulose Misr/Eipico, Sedolac Syrup",
+                uses: "1. Prevention & Treatment of Hepatic Encephalopathy (Acidifies colon & traps NH3 as NH4+)\n2. ICU Constipation Prophylaxis (Prevents ICP spikes in Neuro-ICU)",
+                compat: "Oral / NGT Syrup or Rectal Retention Enema.",
+                volumes: "Oral/NGT: 30-45 mL every 4-6 hours.\nEnema (if Grade III/IV Coma or Ileus): 300 mL Lactulose mixed with 700 mL Water/Normal Saline retained for 30-60 min.",
+                nursing: "Titrate dose to achieve 2 to 3 soft bowel movements per day; watch for hypernatremia and dehydration if excessive diarrhea occurs."
+            },
+            "rifaximin": {
+                title: "Rifaximin (Trikonorm / Gastrobiotic)",
+                active: "Rifaximin (Non-absorbable Gut Antibiotic)",
+                brand: "Trikonorm, Gastrobiotic, Rifaximin (550 mg or 200 mg Tablet)",
+                uses: "1. Hepatic Encephalopathy (Eradicates gut ammonia-producing bacteria alongside Lactulose)",
+                compat: "Oral / Crushed in 20 mL water via NGT.",
+                volumes: "550 mg twice daily (or 400 mg q8h) via NGT/PO.",
+                nursing: "< 0.4% systemic absorption; safe in renal impairment."
+            },
+            "albumin": {
+                title: "Human Albumin 20%",
+                active: "Salt-Poor Human Albumin 20%",
+                brand: "Human Albumin 20% Baxter / Biotest / Octapharma (100 mL or 50 mL Bottle)",
+                uses: "1. Hepatorenal Syndrome (combined with Terlipressin/Norepinephrine)\n2. Post-Large-Volume Paracentesis (8 g Albumin per Liter of ascitic fluid removed)\n3. Spontaneous Bacterial Peritonitis (SBP) & Severe Hypoalbuminemic Edema",
+                compat: "Supplied as Ready-to-Use 20% Colloid Bottle (50 mL or 100 mL) - Infuse directly via vented IV set (Never dilute with Sterile Water -> causes fatal hemolysis!).",
+                volumes: "100 mL bottle (20 g Albumin) infused over 2 to 4 hours.",
+                nursing: "Watch for circulatory overload / pulmonary edema during infusion (20% albumin pulls 3.5x its volume from interstitium into intravascular space)."
+            },
+            "terlipressin": {
+                title: "Terlipressin (Glypressin)",
+                active: "Terlipressin Acetate",
+                brand: "Glypressin, Terlipressin (1 mg Vial)",
+                uses: "1. Acute Esophageal Variceal Hemorrhage\n2. Type 1 Hepatorenal Syndrome (HRS-AKI)",
+                compat: "Reconstitute with supplied 5 mL NaCl solvent (or Normal Saline 0.9%).",
+                volumes: "1 to 2 mg slow IV push over 2 minutes every 4 to 6 hours.",
+                nursing: "Monitor for hyponatremia, myocardial ischemia, and peripheral digital cyanosis."
+            },
+            "calcium": {
+                title: "Calcium Gluconate 10%",
+                active: "Calcium Gluconate (93 mg Elemental Ca = 4.65 mEq per 10 mL)",
+                brand: "Calcium Gluconate 10% Ampoule (10 mL)",
+                uses: "1. First-line Emergency Myocardial Membrane Stabilization in Severe Hyperkalemia (K+ > 6.0 or ECG changes)\n2. Symptomatic Hypocalcemia in Severe Acute Pancreatitis & Massive Transfusion\n3. Magnesium Sulfate Toxicity Antidote",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | STRICT RULE: NEVER mix in same line with Sodium Bicarbonate or Ceftriaxone (precipitates as chalk!).",
+                volumes: "Hyperkalemia Emergency: 10-20 mL (1-2 ampoules) diluted in 50 mL NS/D5W over 5-10 min.\nHypocalcemia Replacement: 20 mL (2 g) in 100 mL NS/D5W over 60 min.",
+                nursing: "Ensure continuous ECG monitoring during infusion (rapid push causes severe bradycardia/syncope)."
+            },
+            "bicarbonate": {
+                title: "Sodium Bicarbonate 8.4%",
+                active: "Sodium Bicarbonate (1 mEq/mL)",
+                brand: "Sodium Bicarbonate 8.4% Otsuka / Eipico (50 mL Vial or 25 mL Ampoule)",
+                uses: "1. Tricyclic Antidepressant (TCA) Overdose Cardiotoxicity (QRS > 100 ms)\n2. Severe Metabolic Acidosis (pH < 7.10) & Bicarbonate-Losing AKI\n3. Urine Alkalinization in Rhabdomyolysis / Salicylate Toxicity",
+                compat: "Sterile Water or Glucose 5% (D5W) to create isotonic 150 mEq/L drip | NEVER mix with Calcium, Norepinephrine, or Dobutamine in same line!",
+                volumes: "TCA Overdose / Arrest Bolus: 50-100 mL (50-100 mEq) IV Push.\nIsotonic Drip: 150 mEq (150 mL of 8.4%) added to 850 mL D5W (Total 1000 mL) infused @ 100-150 mL/hr.",
+                nursing: "Ensure adequate ventilation to blow off CO2 generated by bicarbonate buffering; monitor Serum Na+ and ionized Ca++."
+            },
+            "esmolol": {
+                title: "Esmolol (Brevibloc) / Labetalol (Trandate)",
+                active: "Esmolol HCl (Ultra-short Beta-1 Blocker) / Labetalol HCl (Alpha/Beta Blocker)",
+                brand: "Brevibloc (100 mg / 10 mL) | Trandate (100 mg / 20 mL Ampoule)",
+                uses: "1. First-line Impulse Control in Acute Aortic Dissection (Target HR < 60 bpm & SBP 100-120 mmHg)\n2. Hypertensive Emergency & Neuro-ICU BP Control\n3. Supraventricular Tachycardia / Rapid AFib",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W).",
+                volumes: "Labetalol: 200 mg (40 mL) + 160 mL Normal Saline (1 mg/mL) infused @ 1-4 mg/min (or 20 mg slow IV bolus).\nEsmolol: 2500 mg in 250 mL NS (10 mg/mL) @ 50-200 mcg/kg/min.",
+                nursing: "In Aortic Dissection, ALWAYS reach target Heart Rate (< 60 bpm) with Beta-Blocker BEFORE starting vasodilators."
+            },
+            "nicardipine": {
+                title: "Nicardipine (Cardene) / Nitroprusside",
+                active: "Nicardipine HCl (Dihydropyridine CCB) / Sodium Nitroprusside",
+                brand: "Cardene IV (25 mg / 10 mL Ampoule) | Nipride (50 mg Vial)",
+                uses: "1. Hypertensive Emergency & Acute Intracerebral Hemorrhage (ICH Target SBP < 140 mmHg)\n2. Acute Aortic Dissection (after Beta-Blockade)",
+                compat: "Nicardipine: Normal Saline 0.9% or D5W (Do NOT mix with Ringer's Lactate or NaHCO3).\nNitroprusside: Glucose 5% (D5W) ONLY (Protect bag from light with aluminum foil).",
+                volumes: "Nicardipine: 25 mg (10 mL) diluted in 240 mL Normal Saline (0.1 mg/mL) @ 5-15 mg/hr.\nNitroprusside: 50 mg diluted in 250 mL D5W (200 mcg/mL) @ 0.3-3 mcg/kg/min.",
+                nursing: "Monitor beat-to-beat BP via Radial Arterial Line; change peripheral Nicardipine site every 12h."
+            },
+            "tranexamic": {
+                title: "Tranexamic Acid (Kapron / Cyklokapron)",
+                active: "Tranexamic Acid (Antifibrinolytic)",
+                brand: "Kapron, Savebleed, Trexamin (500 mg / 5 mL Ampoule)",
+                uses: "1. Severe Polytrauma & Hemorrhagic Shock within 3 hours of injury (CRASH-2 Protocol)\n2. Post-CABG / Surgical Bleeding & Postpartum Hemorrhage",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W) | Ringer's Lactate.",
+                volumes: "Loading: 1 g (2 ampoules) diluted in 100 mL Normal Saline 0.9% infused over 10 minutes, followed by 1 g in 500 mL NS over 8 hours.",
+                nursing: "Do not infuse faster than 100 mg/min to avoid hypotension; contraindicated in subarachnoid hemorrhage."
+            },
+            "alteplase": {
+                title: "Alteplase (Actilyse - tPA)",
+                active: "Recombinant Tissue Plasminogen Activator (rt-PA)",
+                brand: "Actilyse (50 mg Vial with 50 mL Sterile Water)",
+                uses: "1. Massive Pulmonary Embolism with Hemodynamic Collapse / Shock\n2. Acute Ischemic Stroke within 4.5-hour window\n3. STEMI (when PCI unavailable)",
+                compat: "Reconstitute with supplied Sterile Water (1 mg/mL), then dilute if needed in Normal Saline 0.9% ONLY (NEVER use Glucose D5W!).",
+                volumes: "Massive PE: 100 mg (100 mL) IV over 2 hours.\nIschemic Stroke: 0.9 mg/kg (Max 90 mg) -> 10% IV bolus over 1 min, remaining 90% over 60 min.",
+                nursing: "Swirl gently to dissolve (do NOT shake). Perform neuro checks & BP q15min; stop infusion immediately if severe headache, hypertension, or bleeding occurs."
+            },
+            "ketamine": {
+                title: "Ketamine (Ketalar)",
+                active: "Ketamine Hydrochloride (NMDA Antagonist)",
+                brand: "Ketalar, Ketamine (500 mg / 10 mL Vial)",
+                uses: "1. Severe Burn Dressing Changes & Polytrauma Analgosedation (Preserves blood pressure & airway reflexes)\n2. Refractory Status Asthmaticus (Potent bronchodilator)\n3. Rapid Sequence Intubation in Septic/Hemorrhagic Shock",
+                compat: "Normal Saline 0.9% | Glucose 5% (D5W).",
+                volumes: "500 mg (10 mL) diluted in 40 mL Normal Saline 0.9% to total 50 mL (Concentration: 10 mg/mL) infused @ 0.2-1 mg/kg/hr.",
+                nursing: "Can increase oral/tracheobronchial secretions and cause emergence vivid dreams (co-administer low-dose Midazolam/Propofol if needed)."
+            },
+            "ringer": {
+                title: "Ringer's Lactate / Balanced Crystalloid",
+                active: "Sodium 130, Potassium 4, Calcium 3, Chloride 109, Lactate 28 mEq/L",
+                brand: "Ringer's Lactate Otsuka / Eipico (500 mL Bag)",
+                uses: "1. Fluid of Choice in Acute Pancreatitis, Major Burns (Parkland Formula), and Septic Shock Resuscitation\n2. Prevents Hyperchloremic Metabolic Acidosis caused by large-volume Normal Saline",
+                compat: "Ready-to-Use 500 mL IV Bag (Do NOT mix with Ceftriaxone, Blood Transfusions, or Sodium Bicarbonate due to Calcium content).",
+                volumes: "500 mL or 1000 mL IV bag titrated to hemodynamic targets and Urine Output (0.5-1 mL/kg/hr).",
+                nursing: "Avoid in Severe Hyperkalemia (K+ > 5.5) and Traumatic Brain Injury (slightly hypotonic 273 mOsm/L -> use 0.9% Normal Saline in TBI)."
+            },
+            "saline": {
+                title: "0.9% Normal Saline (NaCl 0.9%)",
+                active: "Isotonic Sodium Chloride 0.9% (154 mEq Na+ & 154 mEq Cl- per Liter)",
+                brand: "Normal Saline 0.9% Otsuka / Eipico (500 mL Bag)",
+                uses: "1. Initial Fluid of Choice in Diabetic Ketoacidosis (DKA), HHS, and Traumatic Brain Injury (TBI)\n2. Only Crystalloid Compatible with Packed RBC Blood Transfusions\n3. Standard Diluent for ICU IV Medications",
+                compat: "Ready-to-Use 500 mL IV Bag.",
+                volumes: "250-500 mL/hr during initial resuscitation, or 50-100 mL for IV drug dilution.",
+                nursing: "Monitor Serum Chloride and pH during large-volume resuscitation (> 2-3 Liters causes hyperchloremic normal-anion-gap acidosis)."
+            }
+        };
 
         const COLOR_THEMES = {
             rose_pink: {
@@ -683,27 +1708,446 @@
             } catch (e) {}
         }
 
-        // دالة ذكية تقرأ الملف المضغوط (.json.gz) وتفك ضغطه في المتصفح فوراً، أو تقرأ (.json) العادي احتياطياً
-        async function loadDataset() {
-            const cacheBuster = "?v=" + new Date().getTime();
-            try {
-                const gzResponse = await fetch("./icu_patients_10000.json.gz" + cacheBuster);
-                if (gzResponse.ok) {
-                    const ds = new DecompressionStream("gzip");
-                    const decompressedStream = gzResponse.body.pipeThrough(ds);
-                    const text = await new Response(decompressedStream).text();
-                    return JSON.parse(text);
-                }
-            } catch (gzErr) {
-                console.warn("Compressed file not found or already decompressed, trying fallback...", gzErr);
+        // 1. دالة فتح نافذة تفاصيل الدواء (Drug Popup)
+        function openDrugModal(drugKey, fallbackName) {
+            const info = DRUG_DATABASE[drugKey] || {
+                title: fallbackName || "ICU Medication",
+                active: fallbackName || "Active Pharmaceutical Ingredient",
+                brand: "Hospital Formulary Commercial Brand (Egypt)",
+                uses: "1. Critical Care Protocol Management\n2. Targeted Organ Support & Prophylaxis",
+                compat: "Normal Saline 0.9% (Preferred) or Glucose 5% (D5W) per ICU dilution chart.",
+                volumes: "Standard vial/ampoule diluted in 50 mL or 100 mL IV solution.",
+                nursing: "Verify 5 Rights of Medication Administration, check IV line compatibility, and monitor vital signs."
+            };
+
+            document.getElementById("modalDrugHeader").textContent = info.title;
+            document.getElementById("modalDrugBody").innerHTML = `
+                <div class="drug-info-row">
+                    <div class="drug-info-title">Active Ingredient (Scientific Name):</div>
+                    <div class="drug-info-text">${info.active}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">Trade Names in Egypt:</div>
+                    <div class="drug-info-text">${info.brand}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">Primary ICU Indications (Ordered by Priority):</div>
+                    <div class="drug-info-text">${info.uses}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">Compatible Diluent Solutions (Saline vs Glucose vs Ringer):</div>
+                    <div class="drug-info-text">${info.compat}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">Reconstitution & Dilution Volume (mL):</div>
+                    <div class="drug-info-text">${info.volumes}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">Critical Nursing Precautions:</div>
+                    <div class="drug-info-text" style="color:var(--drip-red);">${info.nursing}</div>
+                </div>
+            `;
+            document.getElementById("drugModalOverlay").style.display = "flex";
+        }
+
+        // 2. دالة فتح نافذة تفاصيل التشخيص المرضي (Diagnosis Popup)
+        function openDiagnosisModal(encodedDiag) {
+            const diagText = decodeURIComponent(encodedDiag || "");
+            const lower = diagText.toLowerCase();
+
+            let matched = DIAGNOSIS_DATABASE.find(entry =>
+                entry.match.some(keyword => lower.includes(keyword))
+            );
+
+            if (!matched) {
+                matched = {
+                    title: diagText || "ICU Critical Diagnosis",
+                    definition: "Acute life-threatening clinical condition requiring intensive hemodynamic, respiratory, and organ-specific monitoring and support in the Intensive Care Unit.",
+                    etiology: "- Primary organ decompensation or acute systemic insult.\n- Secondary infectious, ischemic, metabolic, or traumatic triggers.",
+                    symptoms: "- Hemodynamic instability, respiratory distress, altered level of consciousness, and end-organ hypoperfusion.",
+                    investigations: "- ABG & Lactate: Assess oxygenation, ventilation, acid-base balance, and tissue perfusion.\n- Complete Blood Count, Renal/Liver Panels, Coagulation Profile, and targeted CT/Ultrasound imaging.",
+                    treatment: "- Goal-directed hemodynamic resuscitation, organ support (Mechanical Ventilation / Vasopressors / CRRT), and targeted definitive therapy.",
+                    complications: "- Multi-Organ Dysfunction Syndrome (MODS), Nosocomial Infections (VAP/CRBSI), and Venous Thromboembolism.",
+                    redFlags: "- Monitor hourly vital signs, MAP (>= 65 mmHg), Urine Output (>= 0.5 mL/kg/hr), and serial neurological status."
+                };
             }
 
-            // Fallback: قراءة ملف الـ JSON العادي إذا لم يكن المضغوط موجوداً
-            const jsonResponse = await fetch("./icu_patients_10000.json" + cacheBuster);
-            if (!jsonResponse.ok) {
-                throw new Error("Could not find dataset file.");
+            document.getElementById("modalDrugHeader").textContent = diagText || matched.title;
+            document.getElementById("modalDrugBody").innerHTML = `
+                <div class="drug-info-row">
+                    <div class="drug-info-title">1. Definition:</div>
+                    <div class="drug-info-text">${matched.definition}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">2. Etiology & Risk Factors:</div>
+                    <div class="drug-info-text">${matched.etiology}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">3. Signs & Symptoms (Clinical Presentation):</div>
+                    <div class="drug-info-text">${matched.symptoms}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">4. Investigations & Expected Diagnostic Findings:</div>
+                    <div class="drug-info-text">${matched.investigations}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">5. ICU Treatment & Medical Management:</div>
+                    <div class="drug-info-text">${matched.treatment}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">6. Potential Complications:</div>
+                    <div class="drug-info-text">${matched.complications}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">7. Critical Nursing Red Flags & Bedside Priorities:</div>
+                    <div class="drug-info-text" style="color:var(--drip-red);">${matched.redFlags}</div>
+                </div>
+            `;
+            document.getElementById("drugModalOverlay").style.display = "flex";
+        }
+
+        // 3. دالة فتح نافذة تفاصيل مود جهاز التنفس الصناعي (Ventilator Mode Popup)
+        function openVentModeModal(encodedMode) {
+            const modeText = decodeURIComponent(encodedMode || "");
+            const lower = modeText.toLowerCase();
+
+            let matched = VENT_MODE_DATABASE.find(entry =>
+                entry.match.some(keyword => lower.includes(keyword))
+            );
+
+            if (!matched) {
+                matched = VENT_MODE_DATABASE[0];
             }
-            return await jsonResponse.json();
+
+            document.getElementById("modalDrugHeader").textContent = modeText || matched.title;
+            document.getElementById("modalDrugBody").innerHTML = `
+                <div class="drug-info-row">
+                    <div class="drug-info-title">1. Full Mode Name & Physiological Meaning:</div>
+                    <div class="drug-info-text"><strong>${matched.fullName}</strong>\n${matched.meaning}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">2. Who Initiates & Delivers the Breath? (Patient vs. Machine):</div>
+                    <div class="drug-info-text">${matched.whoBreathes}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">3. Primary ICU Clinical Indications (When to Use):</div>
+                    <div class="drug-info-text">${matched.indications}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">4. Set Parameters vs. Monitored Dependent Variables:</div>
+                    <div class="drug-info-text">${matched.parameters}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">5. Key Advantages, Risks & Nursing Alarms to Watch:</div>
+                    <div class="drug-info-text" style="color:var(--drip-red);">${matched.nursingWatch}</div>
+                </div>
+            `;
+            document.getElementById("drugModalOverlay").style.display = "flex";
+        }
+
+        // 4. دالة تحليل وتفسير الـ ABG الكامل وكيفية تصحيحه للحالة المثالية (ABG Interpretation Popup)
+        function openABGModal(patientId) {
+            const p = filteredPatients.find(item => item.Patient_ID === patientId) ||
+                      allPatients.find(item => item.Patient_ID === patientId);
+            if (!p) return;
+
+            const labs = p.Labs || {};
+            const abgStr = labs.ABG_Other || p.ABG_and_Key_Labs || "";
+
+            const phMatch = abgStr.match(/pH[:\s]*([0-9.]+)/i);
+            const paco2Match = abgStr.match(/PaCO2[:\s]*([0-9.]+)/i);
+            const pao2Match = abgStr.match(/PaO2[:\s]*([0-9.]+)/i);
+            const hco3Match = abgStr.match(/HCO3[:\s]*([0-9.]+)/i);
+            const lacMatch = abgStr.match(/Lactate[:\s]*([0-9.]+)/i);
+
+            const ph = parseFloat(labs.PH || (phMatch ? phMatch[1] : 7.38));
+            const paco2 = parseFloat(paco2Match ? paco2Match[1] : 40);
+            const pao2 = parseFloat(pao2Match ? pao2Match[1] : 90);
+            const hco3 = parseFloat(hco3Match ? hco3Match[1] : 24);
+            const lactate = parseFloat(lacMatch ? lacMatch[1] : 1.5);
+            const kVal = parseFloat(labs.K || 4.2);
+            const naVal = parseFloat(labs.NA || 140);
+            const onVent = p.On_Ventilator === "Yes" || (p.Ventilator_Parameters && p.Ventilator_Parameters.Attached);
+            const diag = p.ICU_Diagnosis || "";
+
+            let primaryDisorder = "";
+            let compensationStatus = "";
+            let physiologicalMechanism = "";
+            let correctionPlan = "";
+
+            const isAcidemic = ph < 7.35;
+            const isAlkalemic = ph > 7.45;
+            const phStatus = isAcidemic ? `Acidemia (Low pH ${ph} < 7.35)` : (isAlkalemic ? `Alkalemia (High pH ${ph} > 7.45)` : `Normal Arterial pH (${ph} within 7.35 - 7.45)`);
+
+            if (paco2 > 45 && hco3 < 22) {
+                primaryDisorder = "Severe Mixed Respiratory & Metabolic Acidosis";
+                compensationStatus = "Decompensated Mixed Acidosis (Both systems failing simultaneously)";
+                physiologicalMechanism = "- Lungs are failing to clear CO2 (Alveolar Hypoventilation -> high PaCO2 > 45 mmHg) while tissues/kidneys are generating excess metabolic acid or losing bicarbonate (HCO3 < 22 mEq/L).";
+                correctionPlan = "- 1. Ventilator Adjustment (Clear CO2): Increase Minute Ventilation (MVe = RR x VT) by increasing Respiratory Rate by 2-4 bpm or Tidal Volume (while keeping Plateau Pressure < 30 cmH2O).\n- 2. Metabolic Correction: Treat underlying shock/tissue hypoxia with fluids and vasopressors (MAP >= 65 mmHg) to clear Lactate; consider isotonic Sodium Bicarbonate drip ONLY if pH drops < 7.15.";
+            } else if (ph < 7.35 && paco2 > 45) {
+                primaryDisorder = "Primary Respiratory Acidosis";
+                if (hco3 > 26) {
+                    compensationStatus = "Partially Compensated (Acute-on-Chronic Respiratory Acidosis with Renal HCO3 Retention)";
+                } else {
+                    compensationStatus = "Uncompensated Acute Respiratory Acidosis (Renal HCO3 buffering takes 3-5 days to develop)";
+                }
+                physiologicalMechanism = "- Alveolar hypoventilation, severe bronchospasm (COPD/Asthma), or ARDS low-tidal-volume ventilation causes CO2 retention (Hypercapnia).\n- Kidneys attempt to compensate by excreting H+ ions (as NH4+) and reabsorbing Bicarbonate (HCO3-) in the proximal tubules.";
+                if (diag.includes("ARDS")) {
+                    correctionPlan = "- 1. Permissive Hypercapnia Rule in ARDS: In Severe ARDS on low Tidal Volume (4-6 mL/kg IBW), PaCO2 50-65 mmHg is intentionally tolerated as long as pH >= 7.20 to prevent ventilator-induced lung injury.\n- 2. If pH < 7.15: Increase Set RR up to 30-35 bpm (watch for Auto-PEEP) and clear ETT dead-space/secretions.";
+                } else if (diag.includes("COPD") || diag.includes("Asthma")) {
+                    correctionPlan = "- 1. Bronchodilation & Expiratory Time: Administer inline Salbutamol + Ipratropium nebulizers and IV Corticosteroids to relieve airway resistance.\n- 2. Ventilator Adjustment: Prolong Expiratory Time (I:E ratio 1:3.5 to 1:4.5, high inspiratory flow 80-100 L/min) to eliminate trapped air (Auto-PEEP).\n- 3. Target Baseline PaCO2: Lower PaCO2 gradually toward patient's chronic baseline (50-55 mmHg), NOT 40 mmHg, to avoid post-hypercapnic metabolic alkalosis.";
+                } else {
+                    correctionPlan = "- 1. Increase Alveolar Minute Ventilation: Use formula [New RR = (Current RR x Current PaCO2) / Desired PaCO2 40 mmHg].\n- 2. Clear Airway Obstruction: Suction ETT secretions, check for circuit kinks, and reverse excess opioid/sedative depression.";
+                }
+            } else if (ph < 7.35 && hco3 < 22) {
+                const expectedPaco2Min = Math.round((1.5 * hco3 + 8) - 2);
+                const expectedPaco2Max = Math.round((1.5 * hco3 + 8) + 2);
+                primaryDisorder = "Primary Metabolic Acidosis" + (lactate > 2.5 ? " (High-Anion-Gap Lactic / Keto Acidosis)" : "");
+                if (paco2 < 35) {
+                    compensationStatus = `Partially Compensated by Respiratory Hyperventilation (Kussmaul Breathing) | Winter's Formula Expected PaCO2: ${expectedPaco2Min}-${expectedPaco2Max} mmHg (Actual: ${paco2} mmHg)`;
+                } else {
+                    compensationStatus = `Uncompensated / Inadequate Respiratory Compensation | Winter's Formula Expected PaCO2: ${expectedPaco2Min}-${expectedPaco2Max} mmHg (Actual: ${paco2} mmHg -> indicates concomitant respiratory fatigue!)`;
+                }
+                physiologicalMechanism = "- Excess fixed acids (Lactic acid from shock/hypoperfusion, Ketoacids in DKA, or Uremic acids in AKI) consume serum Bicarbonate (HCO3-).\n- Central chemoreceptors sense Low pH and stimulate deep, rapid Kussmaul respirations to blow off volatile acid (CO2) via the lungs.";
+                if (diag.includes("DKA") || diag.includes("Diabetic")) {
+                    correctionPlan = "- 1. Stop Ketogenesis: Continuous IV Regular Insulin infusion (0.1 Units/kg/hr) + aggressive IV Crystalloid hydration (Normal Saline / Ringer's Lactate) -> metabolizing ketones regenerates endogenous HCO3-!\n- 2. Protect Potassium: Check K+ q2h and replace KCl (insulin + rising pH drives K+ rapidly into cells).\n- 3. Avoid Sodium Bicarbonate unless pH < 6.90-7.00.";
+                } else if (diag.includes("Kidney") || diag.includes("AKI") || diag.includes("ESRD") || diag.includes("Acidosis")) {
+                    correctionPlan = "- 1. Isotonic Sodium Bicarbonate Infusion: Infuse 150 mEq NaHCO3 in 1L D5W @ 100-150 mL/hr if pH < 7.15.\n- 2. Renal Replacement Therapy: Initiate CRRT (CVVHDF) or Hemodialysis with high-bicarbonate dialysate to clear uremic acids and restore HCO3- to 22-24 mEq/L.";
+                } else {
+                    correctionPlan = "- 1. Treat Root Cause of Lactic Acidosis: Restore tissue oxygen delivery with Balanced Crystalloids (Ringer's Lactate), Vasopressors (Target MAP >= 65 mmHg), and early Antibiotics/Source Control.\n- 2. Maintain Compensatory Minute Ventilation: If patient is intubated, set ventilator RR high enough (20-26 bpm) to match their compensatory hyperventilation.";
+                }
+            } else if (ph > 7.45 && paco2 < 35) {
+                primaryDisorder = "Primary Respiratory Alkalosis";
+                compensationStatus = hco3 < 22 ? "Partially Compensated by Renal Bicarbonate Excretion" : "Uncompensated Acute Respiratory Alkalosis";
+                physiologicalMechanism = "- Alveolar hyperventilation (driven by hypoxia, pain, anxiety, fever, hepatic encephalopathy ammonia, or excessive ventilator RR/VT) blows off too much CO2 (Hypocapnia < 35 mmHg).";
+                correctionPlan = onVent
+                    ? "- 1. Ventilator Adjustment: Reduce Set Respiratory Rate (RR) by 2-4 bpm or reduce Tidal Volume (unless patient is triggers-driving due to pain/hypoxia).\n- 2. Treat Underlying Trigger: Provide adequate analgesia/sedation, control fever, and correct hypoxemia."
+                    : "- 1. Treat Underlying Trigger of Tachypnea: Correct hypoxemia with supplemental O2, relieve pain/anxiety, and treat hepatic encephalopathy (Lactulose) or pulmonary embolism.";
+            } else if (ph > 7.45 && hco3 > 26) {
+                primaryDisorder = "Primary Metabolic Alkalosis";
+                compensationStatus = paco2 > 45 ? "Partially Compensated by Alveolar Hypoventilation" : "Uncompensated Metabolic Alkalosis";
+                physiologicalMechanism = "- Loss of hydrogen/chloride ions via NG suctioning/vomiting or loop diuretic (Furosemide) contraction alkalosis and hypokalemia.";
+                correctionPlan = "- 1. Chloride & Potassium Replacement: Infuse 0.9% Normal Saline and replace Potassium Chloride (KCl) to allow kidneys to excrete excess HCO3-.\n- 2. Consider Acetazolamide (Diamox) 250-500 mg IV if diuretic-induced contraction alkalosis.";
+            } else {
+                primaryDisorder = (paco2 < 35 && hco3 < 22) ? "Fully Compensated Metabolic Acidosis / Respiratory Alkalosis" :
+                                  (paco2 > 45 && hco3 > 26) ? "Fully Compensated Chronic Respiratory Acidosis" :
+                                  "Normal Balanced Acid-Base Status (Euhydric pH)";
+                compensationStatus = "Fully Compensated / Physiologically Balanced (pH 7.35 - 7.45)";
+                physiologicalMechanism = "- Arterial pH is maintained within the optimal physiological window (7.35 - 7.45) for cellular enzymatic function and myocardial contractility.";
+                correctionPlan = "- 1. Maintain Current Strategy: Continue current ventilator settings (Normocapnia target PaCO2 35-40 mmHg, especially critical in TBI/ICP).\n- 2. Wean FiO2/PEEP gradually as oxygenation allows while monitoring serial ABGs.";
+            }
+
+            const o2Status = pao2 < 60 ? `Severe Hypoxemia (PaO2 ${pao2} mmHg < 60 -> Acute Hypoxemic Respiratory Failure)` :
+                             (pao2 < 80 ? `Mild-to-Moderate Hypoxemia (PaO2 ${pao2} mmHg < 80)` :
+                             (pao2 > 120 ? `Hyperoxemia (PaO2 ${pao2} mmHg > 120 -> Consider weaning FiO2 unless CO Poisoning)` :
+                             `Normal Arterial Oxygenation (PaO2 ${pao2} mmHg within 80-100)`));
+
+            const o2Correction = pao2 < 65
+                ? "Increase Oxygenation (Mean Airway Pressure): Increase PEEP by 2-4 cmH2O (to recruit alveoli), titrate FiO2 to keep SpO2 >= 90-94%, suction ETT secretions, and utilize Prone Positioning if P/F ratio < 150."
+                : (pao2 > 125 && !diag.includes("Carbon Monoxide")
+                    ? "Prevent Hyperoxic Lung/Reperfusion Injury: Wean FiO2 down in 5-10% increments to maintain target PaO2 75-100 mmHg (SpO2 94-98%)."
+                    : "Oxygenation is at clinical target; maintain current PEEP and FiO2.");
+
+            const lacStatus = lactate >= 4.0 ? `Severe Hyperlactatemia (${lactate} mmol/L >= 4.0 -> Critical Tissue Hypoperfusion / Shock)` :
+                              (lactate >= 2.0 ? `Elevated Serum Lactate (${lactate} mmol/L -> Cellular Hypoxia / Stress)` :
+                              `Normal Serum Lactate (${lactate} mmol/L < 2.0)`);
+
+            const kShiftEffect = isAcidemic
+                ? `Acidemia Effect (pH ${ph}): Excess extracellular H+ ions shift into cells in exchange for K+ moving OUT into serum -> Serum K+ (${kVal} mEq/L) rises by ~0.6 mEq/L for every 0.1 drop in pH. WARNING: As you correct acidosis and pH rises back to 7.40, K+ will rapidly shift back into cells causing dangerous Hypokalemia! Additionally, acidosis decreases albumin binding, increasing free Ionized Calcium (Ca++).`
+                : (isAlkalemic
+                    ? `Alkalemia Effect (pH ${ph}): H+ ions move out of cells while K+ shifts INTO cells -> causes Hypokalemia (Current K+: ${kVal} mEq/L). Alkalosis also increases Calcium binding to albumin, dropping free Ionized Calcium (Ca++) and causing tetany/arrhythmias!`
+                    : `Normal pH (${ph}): Extracellular-to-intracellular Potassium (Current K+: ${kVal} mEq/L) and Ionized Calcium equilibrium is stable.`);
+
+            document.getElementById("modalDrugHeader").textContent = `ABG Interpretation & Correction (${p.Patient_ID})`;
+            document.getElementById("modalDrugBody").innerHTML = `
+                <div class="drug-info-row">
+                    <div class="drug-info-title">1. Patient's Current ABG & Acid-Base Values:</div>
+                    <div class="drug-info-text">pH: ${ph} (Normal: 7.35-7.45) | PaCO2: ${paco2} mmHg (Normal: 35-45) | HCO3: ${hco3} mEq/L (Normal: 22-26)\nPaO2: ${pao2} mmHg (Normal: 80-100) | Lactate: ${lactate} mmol/L (Normal: < 2.0) | Na+: ${naVal} | K+: ${kVal} mEq/L</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">2. Complete Step-by-Step ABG Interpretation:</div>
+                    <div class="drug-info-text" style="color:var(--drip-red);"><strong>Final Diagnosis: ${primaryDisorder}</strong>\n- Acid-Base State: ${phStatus}\n- Compensation Status: ${compensationStatus}\n- Oxygenation Status: ${o2Status}\n- Perfusion / Lactate: ${lacStatus}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">3. Physiological Mechanism & Compensation:</div>
+                    <div class="drug-info-text">${physiologicalMechanism}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">4. How to Correct & Reach Ideal ABG State (Ventilator & Medical Plan):</div>
+                    <div class="drug-info-text">${correctionPlan}\n- <strong>Oxygenation Plan:</strong> ${o2Correction}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">5. Effect of Current pH on Potassium (K+) & Ionized Calcium (Ca++):</div>
+                    <div class="drug-info-text">${kShiftEffect}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">6. Arterial Blood Gas Nursing & Sampling Precautions:</div>
+                    <div class="drug-info-text">- Perform Modified Allen's Test before radial artery puncture to verify collateral ulnar perfusion.\n- Expel all air bubbles immediately from heparinized ABG syringe (air bubbles falsely elevate PaO2 and lower PaCO2).\n- Analyze sample within 15 minutes (or place on ice to prevent ongoing WBC glycolysis from falsely lowering pH/PaO2 and raising Lactate).\n- Repeat ABG 30 to 60 minutes after any mechanical ventilator parameter change.</div>
+                </div>
+            `;
+            document.getElementById("drugModalOverlay").style.display = "flex";
+        }
+
+        function closeDrugModal() {
+            document.getElementById("drugModalOverlay").style.display = "none";
+        }
+
+        const DRUG_KEYWORDS = [
+            { pattern: "Norepinephrine (Levophed)", key: "norepinephrine" },
+            { pattern: "Norepinephrine", key: "norepinephrine" },
+            { pattern: "Vasopressin", key: "vasopressin" },
+            { pattern: "Propofol", key: "propofol" },
+            { pattern: "Dexmedetomidine (Precedex)", key: "dexmedetomidine" },
+            { pattern: "Dexmedetomidine", key: "dexmedetomidine" },
+            { pattern: "Remifentanil", key: "remifentanil" },
+            { pattern: "Fentanyl", key: "fentanyl" },
+            { pattern: "Pantoprazole (Controloc)", key: "pantoprazole" },
+            { pattern: "Pantoprazole", key: "pantoprazole" },
+            { pattern: "Meropenem", key: "meropenem" },
+            { pattern: "Aztreonam", key: "aztreonam" },
+            { pattern: "Levofloxacin (Tavanic)", key: "levofloxacin" },
+            { pattern: "Levofloxacin", key: "levofloxacin" },
+            { pattern: "Vancomycin", key: "vancomycin" },
+            { pattern: "Hydrocortisone", key: "hydrocortisone" },
+            { pattern: "Unfractionated Heparin", key: "heparin" },
+            { pattern: "Heparin", key: "heparin" },
+            { pattern: "Enoxaparin (Clexane)", key: "enoxaparin" },
+            { pattern: "Enoxaparin", key: "enoxaparin" },
+            { pattern: "Ipratropium Bromide (Atrovent)", key: "ipratropium" },
+            { pattern: "Ipratropium (Atrovent)", key: "ipratropium" },
+            { pattern: "Salbutamol (Ventolin)", key: "salbutamol" },
+            { pattern: "Salbutamol (Farcolin)", key: "salbutamol" },
+            { pattern: "Salbutamol", key: "salbutamol" },
+            { pattern: "Chlorhexidine 0.12%", key: "chlorhexidine" },
+            { pattern: "Paracetamol (Perfalgan)", key: "paracetamol" },
+            { pattern: "Paracetamol", key: "paracetamol" },
+            { pattern: "Cisatracurium (Nimbex)", key: "cisatracurium" },
+            { pattern: "Midazolam (Dormicum)", key: "midazolam" },
+            { pattern: "Midazolam", key: "midazolam" },
+            { pattern: "Piperacillin/Tazobactam (Tazocin)", key: "piperacillin" },
+            { pattern: "Piperacillin/Tazobactam", key: "piperacillin" },
+            { pattern: "Cefepime", key: "cefepime" },
+            { pattern: "Clindamycin", key: "clindamycin" },
+            { pattern: "Dexamethasone", key: "dexamethasone" },
+            { pattern: "Methylprednisolone (Solu-Medrol)", key: "methylprednisolone" },
+            { pattern: "Methylprednisolone", key: "methylprednisolone" },
+            { pattern: "Furosemide (Lasix)", key: "furosemide" },
+            { pattern: "Furosemide", key: "furosemide" },
+            { pattern: "Metoclopramide (Primperan)", key: "metoclopramide" },
+            { pattern: "Metoclopramide", key: "metoclopramide" },
+            { pattern: "N-Acetylcysteine (NAC)", key: "acetylcysteine" },
+            { pattern: "Acetylcysteine (Mucomyst)", key: "acetylcysteine" },
+            { pattern: "N-Acetylcysteine", key: "acetylcysteine" },
+            { pattern: "Regular Insulin (Actrapid)", key: "insulin" },
+            { pattern: "Insulin Glargine (Lantus)", key: "insulin" },
+            { pattern: "Regular Insulin", key: "insulin" },
+            { pattern: "Potassium Chloride (KCl)", key: "potassium" },
+            { pattern: "KCl", key: "potassium" },
+            { pattern: "Ondansetron (Zofran)", key: "ondansetron" },
+            { pattern: "Ondansetron", key: "ondansetron" },
+            { pattern: "Magnesium Sulfate", key: "magnesium" },
+            { pattern: "MgSO4", key: "magnesium" },
+            { pattern: "Ceftriaxone", key: "ceftriaxone" },
+            { pattern: "3% Hypertonic Saline", key: "hypertonic" },
+            { pattern: "Mannitol 20%", key: "mannitol" },
+            { pattern: "Levetiracetam (Keppra)", key: "levetiracetam" },
+            { pattern: "Nimodipine", key: "nimodipine" },
+            { pattern: "Dobutamine", key: "dobutamine" },
+            { pattern: "Nitroglycerin (Tridil)", key: "nitroglycerin" },
+            { pattern: "Nitroglycerin", key: "nitroglycerin" },
+            { pattern: "Aspirin", key: "aspirin" },
+            { pattern: "Clopidogrel (Plavix)", key: "clopidogrel" },
+            { pattern: "Ticagrelor (Brilique)", key: "clopidogrel" },
+            { pattern: "Clopidogrel", key: "clopidogrel" },
+            { pattern: "Atorvastatin (Lipitor)", key: "atorvastatin" },
+            { pattern: "Atorvastatin", key: "atorvastatin" },
+            { pattern: "Morphine Sulfate", key: "morphine" },
+            { pattern: "Epinephrine (Adrenaline)", key: "epinephrine" },
+            { pattern: "Epinephrine", key: "epinephrine" },
+            { pattern: "Amiodarone (Cordarone)", key: "amiodarone" },
+            { pattern: "Octreotide (Sandostatin)", key: "octreotide" },
+            { pattern: "Octreotide", key: "octreotide" },
+            { pattern: "Lactulose", key: "lactulose" },
+            { pattern: "Rifaximin (Trikonorm)", key: "rifaximin" },
+            { pattern: "Rifaximin", key: "rifaximin" },
+            { pattern: "Human Albumin 20%", key: "albumin" },
+            { pattern: "Terlipressin", key: "terlipressin" },
+            { pattern: "Calcium Gluconate 10%", key: "calcium" },
+            { pattern: "Sodium Bicarbonate", key: "bicarbonate" },
+            { pattern: "Esmolol", key: "esmolol" },
+            { pattern: "Labetalol", key: "esmolol" },
+            { pattern: "Nicardipine", key: "nicardipine" },
+            { pattern: "Sodium Nitroprusside", key: "nicardipine" },
+            { pattern: "Tranexamic Acid (Kapron)", key: "tranexamic" },
+            { pattern: "Tranexamic Acid", key: "tranexamic" },
+            { pattern: "Alteplase (tPA)", key: "alteplase" },
+            { pattern: "Ketamine", key: "ketamine" },
+            { pattern: "Ringer's Lactate", key: "ringer" },
+            { pattern: "0.9% Normal Saline", key: "saline" }
+        ];
+
+        function formatMedicationTextWithLinks(text) {
+            if (!text) return "";
+            let result = text;
+            const placeholders = [];
+
+            DRUG_KEYWORDS.forEach((item) => {
+                const idx = result.indexOf(item.pattern);
+                if (idx !== -1) {
+                    const token = `__DRUG_LINK_${placeholders.length}__`;
+                    const safeLabel = item.pattern.replace(/'/g, "\\'");
+                    placeholders.push(
+                        `<span class="clickable-drug" onclick="openDrugModal('${item.key}', '${safeLabel}')">${item.pattern}</span>`
+                    );
+                    result = result.split(item.pattern).join(token);
+                }
+            });
+
+            placeholders.forEach((htmlLink, i) => {
+                result = result.split(`__DRUG_LINK_${i}__`).join(htmlLink);
+            });
+
+            return result;
+        }
+
+        async function loadDataset() {
+            const cacheBuster = "?v=" + new Date().getTime();
+
+            try {
+                const jsonRes = await fetch("./icu_patients_10000.json" + cacheBuster);
+                if (jsonRes.ok) {
+                    return await jsonRes.json();
+                }
+            } catch (e) {}
+
+            try {
+                const gzRes = await fetch("./icu_patients_10000.json.gz" + cacheBuster);
+                if (gzRes.ok) {
+                    const buffer = await gzRes.arrayBuffer();
+                    const bytes = new Uint8Array(buffer);
+                    if (bytes.length >= 2 && bytes[0] === 0x1f && bytes[1] === 0x8b) {
+                        const ds = new DecompressionStream("gzip");
+                        const decompressedStream = new Blob([buffer]).stream().pipeThrough(ds);
+                        const text = await new Response(decompressedStream).text();
+                        return JSON.parse(text);
+                    } else {
+                        const text = new TextDecoder("utf-8").decode(bytes);
+                        return JSON.parse(text);
+                    }
+                }
+            } catch (e) {}
+
+            try {
+                const oldRes = await fetch("./ICU_Complete_Nursing_Dataset_10000.json" + cacheBuster);
+                if (oldRes.ok) return await oldRes.json();
+            } catch (e) {}
+
+            try {
+                const apiRes = await fetch("/api/patients");
+                if (apiRes.ok) return await apiRes.json();
+            } catch (e) {}
+
+            throw new Error("Dataset file not found.");
         }
 
         window.addEventListener("DOMContentLoaded", async () => {
@@ -725,7 +2169,7 @@
             } catch (err) {
                 console.error(err);
                 document.getElementById("recordCountBadge").textContent =
-                    `Status: Place icu_patients_10000.json.gz in the same folder`;
+                    `Status: Ensure icu_patients_10000.json (or .json.gz) is in the same folder and open via Local Server / GitHub Pages`;
             }
         });
 
@@ -742,14 +2186,18 @@
         }
 
         function createVentilatorSectionHTML(p) {
-            if (p.On_Ventilator !== "Yes" && (!p.Ventilator_Parameters || !p.Ventilator_Parameters.Attached)) {
+            const isOnVent = (p.On_Ventilator === "Yes") ||
+                             (p.On_Mechanical_Ventilator && p.On_Mechanical_Ventilator.startsWith("Yes")) ||
+                             (p.Ventilator_Parameters && p.Ventilator_Parameters.Attached);
+
+            if (!isOnVent) {
                 return "";
             }
 
             let vp = p.Ventilator_Parameters || {};
 
-            if (!vp.MOD && p.Ventilator_Settings) {
-                const vs = p.Ventilator_Settings;
+            if (!vp.MOD && (p.Ventilator_Settings || p.Ventilator_Oxygen_Support)) {
+                const vs = p.Ventilator_Settings || p.Ventilator_Oxygen_Support || "";
                 const modeMatch = vs.match(/Mode:\s*([^|]+)/i);
                 const tvMatch = vs.match(/TV:\s*([^|]+)/i);
                 const ipapMatch = vs.match(/IPAP:\s*([^|]+)/i);
@@ -783,16 +2231,18 @@
                 };
             }
 
+            const encodedMode = encodeURIComponent(vp.MOD || "AC/VC");
+
             return `
                 <!-- 8. MECHANICAL VENTILATOR PARAMETERS -->
                 <div class="section-banner" style="border-top: none;">
                     <span class="num-badge">8</span>
-                    <span>MECHANICAL VENTILATOR PARAMETERS & LUNG MECHANICS</span>
+                    <span>MECHANICAL VENTILATOR PARAMETERS & LUNG MECHANICS (CLICK MODE FOR GUIDE)</span>
                 </div>
                 <div class="vent-params-cols">
                     <div class="vent-param-box">
-                        <span class="vp-label">VENT MODE</span>
-                        <span class="vp-val">${vp.MOD || ""}</span>
+                        <span class="vp-label">VENT MODE (CLICK)</span>
+                        <span class="clickable-vent-mode" onclick="openVentModeModal('${encodedMode}')">${vp.MOD || ""}</span>
                     </div>
                     <div class="vent-param-box">
                         <span class="vp-label">TIDAL VOL (VT)</span>
@@ -846,15 +2296,18 @@
 
             const medsRowsHTML = meds.map(m => {
                 const isDrip = (m.time || "").includes("DRIP") || (m.time || "").includes("TRANSFUSE") || (m.time || "").includes("ANTIDOTE") || (m.time || "").includes("CRRT") || (m.time || "").includes("RESUSCIT");
+                const linkedTask = formatMedicationTextWithLinks(m.task || "");
                 return `
                     <tr class="${isDrip ? 'drip-row' : ''}">
                         <td>${m.time || ""}</td>
-                        <td>${m.task || ""}</td>
+                        <td>${linkedTask}</td>
                     </tr>
                 `;
             }).join("");
 
             const ventSectionHTML = createVentilatorSectionHTML(p);
+            const linkedDripsSummary = formatMedicationTextWithLinks(p.Drips_Summary || p.Active_Infusions_Medications || "");
+            const encodedDiagnosis = encodeURIComponent(p.ICU_Diagnosis || "");
 
             return `
             <div class="patient-sheet">
@@ -871,7 +2324,7 @@
                     </div>
                     <div class="cell dotted-right">
                         <span class="field-label">DOB:</span>
-                        <span class="field-value">${p.DOB || ""}</span>
+                        <span class="field-value">${p.DOB || p.Age + " yrs"}</span>
                     </div>
                     <div class="cell">
                         <span class="field-label">Sex:</span>
@@ -889,7 +2342,7 @@
                     </div>
                     <div class="cell dotted-right">
                         <span class="field-label">Room:</span>
-                        <span class="field-value">${p.Room || ""}</span>
+                        <span class="field-value">${p.Room || "ICU Bed"}</span>
                     </div>
                     <div class="cell">
                         <span class="field-label">Code:</span>
@@ -905,11 +2358,11 @@
                     <div class="cell" style="padding: 0; display: flex; flex-direction: column;">
                         <div style="padding: 6px 10px; border-bottom: 1.5px dotted var(--theme-border);">
                             <span class="field-label">MD:</span>
-                            <span class="field-value">${p.MD || ""}</span>
+                            <span class="field-value">${p.MD || "ICU Intensivist Team"}</span>
                         </div>
                         <div style="padding: 6px 10px; border-bottom: 1.5px dotted var(--theme-border); flex: 1;">
-                            <div class="field-label">Primary Diagnosis:</div>
-                            <div class="accent-text" style="margin-top: 3px;">${p.ICU_Diagnosis || ""}</div>
+                            <div class="field-label">Primary Diagnosis (Click for Guide):</div>
+                            <span class="clickable-diagnosis" onclick="openDiagnosisModal('${encodedDiagnosis}')">${p.ICU_Diagnosis || ""}</span>
                         </div>
                         <div style="padding: 6px 10px; flex: 1;">
                             <div class="field-label">Tests/Procedures (PSH):</div>
@@ -924,13 +2377,13 @@
                                 <div class="field-value">${p.Past_Medical_History || ""}</div>
                             </div>
                             <div style="margin-top: 8px; border-top: 1px dotted var(--theme-border); padding-top: 3px; font-size: 0.75rem; color: var(--text-muted);">
-                                Allergies: <span class="field-value" style="color:${(p.Allergies || '').includes('NKDA') ? 'var(--data-blue)' : '#c62828'};">${p.Allergies || ""}</span>
+                                Allergies: <span class="field-value" style="color:${(p.Allergies || 'NKDA').includes('NKDA') ? 'var(--data-blue)' : '#c62828'};">${p.Allergies || "NKDA"}</span>
                             </div>
                         </div>
                         <div style="padding: 6px 10px; flex: 1.2;">
                             <div class="sub-box-title">Hospital Course & Position</div>
                             <div class="field-value" style="font-size: 0.76rem;">
-                                <strong>Position:</strong> ${p.Recommended_Position || ""}
+                                <strong>Position:</strong> ${p.Recommended_Position || p.Recommended_Patient_Position || ""}
                             </div>
                         </div>
                     </div>
@@ -970,8 +2423,8 @@
                         <div class="assessment-content">${p.PE_Neurological || ""}</div>
                     </div>
                     <div class="assessment-cell">
-                        <div class="field-label">Skin/ Wounds (Braden: ${p.Braden_Scale || ""}):</div>
-                        <div class="assessment-content">${p.PE_Skin_Wounds || ""}</div>
+                        <div class="field-label">Skin/ Wounds (Braden: ${p.Braden_Scale || p.Braden_Scale_Score || ""}):</div>
+                        <div class="assessment-content">${p.PE_Skin_Wounds || p.PE_Skin_Integumentary || ""}</div>
                     </div>
 
                     <div class="assessment-cell">
@@ -980,7 +2433,7 @@
                     </div>
                     <div class="assessment-cell">
                         <div class="field-label">Musculoskeletal:</div>
-                        <div class="assessment-content">${p.PE_Musculoskeletal || ""}</div>
+                        <div class="assessment-content">${p.PE_Musculoskeletal || p.Recommended_Patient_Position || ""}</div>
                     </div>
 
                     <div class="assessment-cell">
@@ -996,12 +2449,12 @@
                         <div class="field-label">GI/GU & Urine Output:</div>
                         <div class="assessment-content">
                             <div>${p.PE_Gastrointestinal || ""}</div>
-                            <div style="margin-top:4px;" class="accent-text">Urine Output: ${p.Urine_Output || ""}</div>
+                            <div style="margin-top:4px;" class="accent-text">Urine Output: ${p.Urine_Output || p.Urine_Output_mL_hr || ""}</div>
                         </div>
                     </div>
                     <div class="assessment-cell no-bottom">
-                        <div class="field-label">Drips/Fluids Summary:</div>
-                        <div class="assessment-content">${p.Drips_Summary || ""}</div>
+                        <div class="field-label">Drips/Fluids Summary (Click Drug for Details):</div>
+                        <div class="assessment-content">${linkedDripsSummary}</div>
                     </div>
                 </div>
 
@@ -1079,7 +2532,7 @@
                             </div>
                         </div>
                         <div class="lab-other">
-                            ABG/Other: <span class="field-value">${labs.ABG_Other || ""}</span>
+                            <span class="clickable-abg" onclick="openABGModal('${p.Patient_ID}')">ABG</span>/Other: <span class="field-value">${labs.ABG_Other || p.ABG_and_Key_Labs || ""}</span>
                         </div>
                     </div>
                 </div>
@@ -1091,7 +2544,7 @@
                     <div class="bottom-col">
                         <div class="section-banner">
                             <span class="num-badge">6</span>
-                            <span>MEDICATIONS & TO DO (COMPLETE ICU DRUG SHEET)</span>
+                            <span>MEDICATIONS & TO DO (CLICK ANY DRUG FOR DILUTION GUIDE)</span>
                         </div>
                         <table class="meds-table">
                             <thead>
@@ -1113,9 +2566,9 @@
                         </div>
                         <div class="notes-body">
                             <div class="nursing-tag">Priority ICU Nursing Interventions:</div>
-                            <div>${p.Nursing_Interventions || ""}</div>
+                            <div>${p.Nursing_Interventions || p.Priority_Nursing_Interventions || ""}</div>
                             <div class="nursing-tag" style="margin-top:10px;">Ventilator Precautions & Alarms to Watch:</div>
-                            <div>${p.Ventilator_Watch || ""}</div>
+                            <div>${p.Ventilator_Watch || p.Ventilator_Nursing_Precautions_Alarms || ""}</div>
                         </div>
                     </div>
                 </div>
