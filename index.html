@@ -349,7 +349,7 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             flex: 1;
-            min-height: 125px;
+            min-height: 92px;
         }
 
         .vital-item {
@@ -374,6 +374,61 @@
             font-size: 0.82rem;
             color: var(--data-blue);
             font-weight: 700;
+        }
+
+        /* المساحة المخصصة للأشعة تحت العلامات الحيوية مباشرة */
+        .vitals-radiology-box {
+            border-top: 1.5px dotted var(--theme-border);
+            padding: 5px 8px;
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            background-color: #ffffff;
+            line-height: 1.35;
+        }
+
+        /**/
+        .vitals-ecg-box {
+            border-top: 1.5px dotted var(--theme-border);
+            padding: 6px 8px;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .ecg-header-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.73rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .ecg-strip-frame {
+            width: 100%;
+            height: 46px;
+            border: 1.5px solid var(--theme-border);
+            border-radius: 6px;
+            background-color: var(--theme-light);
+            background-image:
+                linear-gradient(to right, rgba(216, 67, 116, 0.12) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(216, 67, 116, 0.12) 1px, transparent 1px),
+                linear-gradient(to right, rgba(216, 67, 116, 0.24) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(216, 67, 116, 0.24) 1px, transparent 1px);
+            background-size: 6px 6px, 6px 6px, 30px 30px, 30px 30px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .ecg-svg {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         .vent-params-cols {
@@ -523,8 +578,8 @@
             color: var(--drip-red);
         }
 
-        /* CLICKABLE DRUG, DIAGNOSIS, VENT MODE & ABG STYLING */
-        .clickable-drug, .clickable-diagnosis, .clickable-vent-mode, .clickable-abg {
+        /* CLICKABLE DRUG, DIAGNOSIS, VENT MODE, ABG, RADIOLOGY & ECG STYLING */
+        .clickable-drug, .clickable-diagnosis, .clickable-vent-mode, .clickable-abg, .clickable-rad, .clickable-ecg {
             color: var(--theme-accent-dark);
             background-color: var(--theme-light);
             border: 1px solid var(--theme-border);
@@ -554,15 +609,15 @@
             text-decoration-style: dotted;
         }
 
-        .clickable-abg {
+        .clickable-abg, .clickable-rad, .clickable-ecg {
             padding: 1px 7px;
-            font-size: 0.74rem;
+            font-size: 0.73rem;
             text-decoration: underline;
             text-decoration-style: dotted;
             margin-right: 3px;
         }
 
-        .clickable-drug:hover, .clickable-diagnosis:hover, .clickable-vent-mode:hover, .clickable-abg:hover {
+        .clickable-drug:hover, .clickable-diagnosis:hover, .clickable-vent-mode:hover, .clickable-abg:hover, .clickable-rad:hover, .clickable-ecg:hover {
             background-color: var(--theme-header);
             color: var(--theme-banner-text);
         }
@@ -752,7 +807,7 @@
 
     <div id="sheetsContainer" class="sheets-grid"></div>
 
-    <!-- SHARED CLINICAL POPUP MODAL (FOR MEDICATIONS, DIAGNOSES, VENT MODES & ABG) -->
+    <!-- SHARED CLINICAL POPUP MODAL (FOR MEDICATIONS, DIAGNOSES, VENT MODES, ABG & RADIOLOGY) -->
     <div id="drugModalOverlay" class="drug-modal-overlay" onclick="closeDrugModal()">
         <div class="drug-modal-content" onclick="event.stopPropagation()">
             <div class="drug-modal-header" id="modalDrugHeader">Clinical Reference Guide</div>
@@ -1988,6 +2043,371 @@
             document.getElementById("drugModalOverlay").style.display = "flex";
         }
 
+        // 5. دالة تحديد الأشعة التشخيصية المطلوبة للحالة (فقط للتشخيصات التي تستدعي أشعة) وفتح البوب أب الخاصة بها
+        function getPatientRadiologyInfo(p) {
+            const diag = (p.ICU_Diagnosis || "").toLowerCase();
+
+            if (diag.includes("pulmonary embolism")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "CTPA (Chest CT Angiogram) + LL Venous Duplex + Echo",
+                    modality: "CT Pulmonary Angiography (CTPA) with IV Contrast + Bilateral Lower Limb Venous Duplex Ultrasound + Transthoracic Echocardiogram (TTE).",
+                    region: "Thorax / Pulmonary Arterial Tree, Bilateral Femoral-Popliteal Veins & Heart Chambers.",
+                    findings: "- CTPA: Intraluminal saddle/lobar filling defect occluding main pulmonary arteries with Right-to-Left Ventricular (RV/LV) diameter ratio > 1.0.\n- LL Venous Duplex: Non-compressible deep femoral/popliteal vein with absent Doppler color flow (confirming DVT source).\n- Bedside Echo: RV dilation/hypokinesis (McConnell's sign), flattened interventricular septum (D-shape LV), and dilated non-collapsing IVC.",
+                    nursingPrep: "- Check Serum Creatinine & eGFR prior to IV iodinated contrast; hold Metformin for 48h post-contrast and hydrate cautiously.\n- Ensure large-bore antecubital IV (18G) for power-injector contrast bolus.\n- Travel with portable O2/ventilator, emergency airway kit, and Norepinephrine pump during CT transport."
+                };
+            } else if (diag.includes("aortic dissection")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "CTA Aorta (Chest/Abdomen) + Transesophageal Echo",
+                    modality: "ECG-Gated CT Angiography (CTA) of Thoracic & Abdominal Aorta + Bedside Transesophageal Echocardiography (TEE).",
+                    region: "Ascending Aorta, Aortic Arch, Descending Thoracic & Abdominal Aorta.",
+                    findings: "- CTA Aorta: Intimal dissection flap separating True Lumen and False Lumen, periaortic hematoma, and assessment of coronary/carotid/renal branch involvement.\n- Portable Chest X-Ray: Widened mediastinum (> 8 cm) and left apical pleural cap.",
+                    nursingPrep: "- CRITICAL TRANSPORT RULE: Keep Heart Rate < 60 bpm (Esmolol/Labetalol drip) and SBP 100-120 mmHg (Nicardipine drip) continuously during transport to CT suite.\n- Monitor radial arterial line waveform and check renal function post-contrast."
+                };
+            } else if (diag.includes("traumatic brain") || diag.includes("tbi") || diag.includes("intracranial hemorrhage") || diag.includes("ich") || diag.includes("subarachnoid") || diag.includes("sah") || diag.includes("craniotomy")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "Non-Contrast Brain CT + Cerebral CTA + TCD Doppler",
+                    modality: "Urgent Non-Contrast Cranial CT Scan + CT Cerebral Angiography (CTA) + Daily Bedside Transcranial Doppler (TCD).",
+                    region: "Brain Parenchyma, Ventricular System, Basal Cisterns, Circle of Willis & Cervical Spine.",
+                    findings: "- Brain CT: Hyperdense acute hematoma (Biconvex lens-shaped in Epidural, Crescent-shaped in Subdural, Basal Cistern star-shaped blood in SAH, or Basal Ganglia bleed in ICH), cerebral edema, effaced sulci, and Midline Shift (> 5 mm).\n- Transcranial Doppler (TCD): Elevated Mean Flow Velocity in Middle Cerebral Artery (> 120-200 cm/sec indicates cerebral vasospasm in SAH).",
+                    nursingPrep: "- MANDATORY EVD SAFETY: Clamp the External Ventricular Drain (EVD) before laying the patient flat on the CT scanner table, and unclamp/re-level at the Tragus immediately upon return!\n- Maintain strict C-spine collar immobilization and monitor EtCO2 (35-38 mmHg) on portable transport ventilator."
+                };
+            } else if (diag.includes("ischemic stroke") || diag.includes("stroke") || diag.includes("cva")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "Brain CT / CTA + Brain MRI (DWI) + Carotid Duplex",
+                    modality: "Non-Contrast Head CT + CT Angiography/Perfusion + Diffusion-Weighted Brain MRI (DWI) + Bilateral Carotid & Vertebral Artery Duplex.",
+                    region: "Cerebral Hemispheres (MCA/ACA/PCA Territories) & Extracranial Carotid Arteries.",
+                    findings: "- Non-Contrast Head CT: Rules out acute hemorrhage prior to tPA; shows hyperdense MCA sign and early insular ribbon loss.\n- Brain MRI (DWI): Bright restricted diffusion in acute ischemic core.\n- Carotid Duplex: Internal carotid artery atherosclerotic plaque stenosis (> 70%) and peak systolic velocity.",
+                    nursingPrep: "- Remove all metallic monitoring leads/objects prior to Brain MRI.\n- Monitor neurological status (NIHSS & pupils) and keep BP within target range (< 180/105 mmHg post-tPA) during imaging."
+                };
+            } else if (diag.includes("status epilepticus") || diag.includes("coma") || diag.includes("encephalopathy")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "Non-Contrast Brain CT + Brain MRI (FLAIR)",
+                    modality: "Urgent Non-Contrast Brain CT Scan + Brain MRI (T2/FLAIR) + Continuous Bedside EEG.",
+                    region: "Cerebral Cortex, Thalami, Brainstem & Ventricles.",
+                    findings: "- Brain CT & MRI: Rules out structural space-occupying lesions, acute hemorrhage, hydrocephalus, or cortical ribbon hyperintensity (anoxic/seizure changes).",
+                    nursingPrep: "- Ensure airway security (ETT taped firmly) and keep IV Midazolam/Propofol bolus ready during CT/MRI transport in case of breakthrough seizures."
+                };
+            } else if (diag.includes("ards") || diag.includes("drowning") || diag.includes("aspiration")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "Portable Chest X-Ray (CXR) + High-Res Chest CT",
+                    modality: "Daily Portable Anteroposterior Chest X-Ray (CXR) + Thorax CT Scan.",
+                    region: "Bilateral Lung Fields, Tracheobronchial Tree & Pleural Spaces.",
+                    findings: "- Chest X-Ray & CT: Bilateral diffuse patchy and confluent alveolar ground-glass opacities ('White-Out Lungs') sparing costophrenic angles, dependent dorsal consolidation, normal cardiothoracic ratio, and verification of ETT tip 3-5 cm above carina.",
+                    nursingPrep: "- Verify Endotracheal Tube depth at lip before and after placing X-ray cassette behind the patient's back.\n- Maintain PEEP during transport using a portable ICU ventilator (never bag-ventilate without a PEEP valve)."
+                };
+            } else if (diag.includes("pneumothorax") || diag.includes("pleural effusion") || diag.includes("pneumonia") || diag.includes("lung injury") || diag.includes("contusion") || diag.includes("copd") || diag.includes("asthma") || diag.includes("respiratory failure")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "Portable Chest X-Ray (CXR) + Bedside Lung US",
+                    modality: "Portable Chest X-Ray (AP View) + Bedside Thoracic Ultrasound (BLUE Protocol).",
+                    region: "Lungs, Pleural Cavity, Diaphragm & Mediastinum.",
+                    findings: "- Chest X-Ray / Lung US: Lobar consolidation with air bronchograms (Pneumonia), visceral pleural line with absent lung sliding/barcode sign (Pneumothorax), anechoic pleural fluid collection above diaphragm (Pleural Effusion), or hyperinflated lungs with flattened hemidiaphragms (COPD/Asthma).\n- Confirms Chest Tube and Central Venous Catheter tip placement.",
+                    nursingPrep: "- Position patient upright / Semi-Fowler's for portable CXR to clearly visualize air-fluid levels and pneumothorax apices.\n- Never clamp a bubbling chest tube during radiology exams."
+                };
+            } else if (diag.includes("cardiogenic") || diag.includes("myocardial infarction") || diag.includes("stemi") || diag.includes("heart failure") || diag.includes("adhf") || diag.includes("cabg") || diag.includes("tamponade") || diag.includes("arrhythmia") || diag.includes("cardiac arrest") || diag.includes("rosc")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "Bedside Echocardiogram (Echo) + Portable CXR",
+                    modality: "2D Transthoracic Echocardiography (TTE) with Color Doppler + Portable Chest X-Ray (CXR) + Coronary Angiography.",
+                    region: "Heart Chambers, Myocardium, Pericardial Sac, Great Vessels & Lung Fields.",
+                    findings: "- Bedside Echo: Left Ventricular Ejection Fraction (LVEF %), anterior/inferior regional wall motion akinesis (STEMI), circumferential pericardial effusion with RV diastolic collapse (Tamponade), and IVC collapsibility index.\n- Portable CXR: Cardiomegaly, perihilar bat-wing alveolar edema, Kerley B lines, and verification of ETT, CVC, Swan-Ganz, or IABP tip position.",
+                    nursingPrep: "- Keep defibrillator pads and ECG leads attached during bedside Echo and portable CXR.\n- Monitor arterial line blood pressure and chest tube patency during cassette placement."
+                };
+            } else if (diag.includes("pancreatitis") || diag.includes("perforation") || diag.includes("peritonitis") || diag.includes("mesenteric")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "Contrast Abdominal/Pelvic CT + Erect CXR / Abd US",
+                    modality: "Contrast-Enhanced CT Abdomen & Pelvis (CECT / Mesenteric CTA) + Erect Chest/Abdominal X-Ray + Hepatobiliary Ultrasound.",
+                    region: "Pancreas, Peritoneal Cavity, Superior Mesenteric Artery (SMA), Bowel Loops & Biliary Tree.",
+                    findings: "- Contrast CT Abdomen: Pancreatic parenchymal necrosis and peripancreatic fluid collections (Balthazar score in Pancreatitis); Superior Mesenteric Artery thromboembolism with bowel wall thickening and pneumatosis intestinalis (Mesenteric Ischemia).\n- Erect CXR / CT: Free intraperitoneal air under the diaphragm (Pneumoperitoneum in Bowel Perforation) and dilated air-fluid bowel loops (Ileus).",
+                    nursingPrep: "- Ensure NGT decompression before supine CT scan to prevent aspiration of bilious gastric contents.\n- Check Serum Creatinine before IV contrast and maintain aggressive Ringer's Lactate hydration to prevent contrast nephropathy."
+                };
+            } else if (diag.includes("hepatic") || diag.includes("cirrhosis") || diag.includes("liver") || diag.includes("variceal") || diag.includes("gastrointestinal bleeding")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "Abdominal US + Portal Vein Color Doppler",
+                    modality: "Bedside Hepatobiliary Ultrasound + Portal & Hepatic Vein Color Doppler + Upper GI Endoscopy.",
+                    region: "Liver Parenchyma, Portal Vein, Spleen & Peritoneal Ascitic Cavity.",
+                    findings: "- Abdominal US & Portal Doppler: Coarse nodular cirrhotic liver, splenomegaly, moderate-to-tense free peritoneal ascites (marking safe paracentesis pocket), and hepatofugal/slow portal venous flow ( ruling out Portal Vein Thrombosis).",
+                    nursingPrep: "- Check INR and Platelet count prior to ultrasound-guided diagnostic/therapeutic paracentesis.\n- Infuse 8g Human Albumin 20% for every liter of ascitic fluid removed (> 5L)."
+                };
+            } else if (diag.includes("polytrauma") || diag.includes("hemorrhagic") || diag.includes("hypovolemic")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "eFAST Ultrasound + Pan-CT Trauma Scan + Pelvic X-Ray",
+                    modality: "Bedside Extended Focused Assessment with Sonography for Trauma (eFAST) + Whole-Body Trauma Pan-CT (Head, C-Spine, Chest, Abdomen, Pelvis) + Portable Pelvic/Long-Bone X-Rays.",
+                    region: "Pericardium, Pleura, Morrison's Pouch, Splenorenal Recess, Pelvis & Spine.",
+                    findings: "- eFAST Scan: Free anechoic intraperitoneal blood in Morrison's pouch/pelvis (Hemoperitoneum) or hemopericardium/hemothorax.\n- Trauma Pan-CT: Solid organ laceration (spleen/liver/kidney), retroperitoneal hematoma, or unstable pelvic ring fracture.",
+                    nursingPrep: "- TRAUMA RULE: Do NOT transport a hemodynamically unstable trauma patient ('The CT Scanner is the Donut of Death') until airway is secured, Pelvic Binder is applied, and Massive Transfusion Protocol is running!"
+                };
+            } else if (diag.includes("septic shock") || diag.includes("sepsis") || diag.includes("mods")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "Portable Chest X-Ray + Abdomino-Pelvic & Renal US",
+                    modality: "Portable Chest X-Ray (CXR) + Bedside Abdomino-Pelvic & Renal Ultrasound (Sepsis Source Control).",
+                    region: "Thorax, Kidneys/Urinary Tract, Gallbladder & Peritoneal Cavity.",
+                    findings: "- Identifies occult infectious source requiring urgent drainage: lobar pneumonia/empyema, obstructive hydronephrosis/pyonephrosis (Urosepsis), acalculous cholecystitis, or intra-abdominal abscess.\n- Verifies Central Venous Catheter tip at Cavoatrial Junction.",
+                    nursingPrep: "- Coordinate bedside ultrasound or CT-guided percutaneous drainage of any identified abscess/obstruction within 6-12 hours."
+                };
+            } else if (diag.includes("kidney") || diag.includes("aki") || diag.includes("esrd")) {
+                return {
+                    hasImaging: true,
+                    shortLabel: "Bedside Renal & Bladder Ultrasound + CXR",
+                    modality: "Bedside Renal, Ureteral & Bladder Ultrasound + Portable Chest X-Ray (for fluid overload).",
+                    region: "Bilateral Kidneys, Renal Pelvis, Ureters & Urinary Bladder.",
+                    findings: "- Renal Ultrasound: Rules out post-renal obstructive uropathy (hydronephrosis); evaluates kidney size and cortical echogenicity (small echogenic kidneys in chronic ESRD vs normal/enlarged kidneys in acute ATN).\n- Portable CXR: Assesses pulmonary venous congestion and pleural effusions.",
+                    nursingPrep: "- Verify Foley catheter patency (irrigate if blocked by clots/sediment) prior to renal ultrasound."
+                };
+            }
+
+            // الحالات التي لا تستدعي أشعة روتينية (مثل اضطرابات الأملاح البسيطة أو DKA غير المصحوبة بعدوى أو التسمم الدوائي البسيط)
+            return { hasImaging: false };
+        }
+
+        function openRadiologyModal(patientId) {
+            const p = filteredPatients.find(item => item.Patient_ID === patientId) ||
+                      allPatients.find(item => item.Patient_ID === patientId);
+            if (!p) return;
+
+            const rad = getPatientRadiologyInfo(p);
+            if (!rad.hasImaging) return;
+
+            document.getElementById("modalDrugHeader").textContent = `Radiology & Diagnostic Imaging (${p.Patient_ID})`;
+            document.getElementById("modalDrugBody").innerHTML = `
+                <div class="drug-info-row">
+                    <div class="drug-info-title">1. Primary Diagnosis:</div>
+                    <div class="drug-info-text">${p.ICU_Diagnosis || ""}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">2. Performed Imaging Modalities (X-Ray / CT / MRI / Duplex / Echo):</div>
+                    <div class="drug-info-text"><strong>${rad.modality}</strong></div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">3. Anatomical Region Examined:</div>
+                    <div class="drug-info-text">${rad.region}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">4. Expected Radiological & Diagnostic Findings:</div>
+                    <div class="drug-info-text">${rad.findings}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">5. ICU Nursing Preparation, Transport & Contrast Precautions:</div>
+                    <div class="drug-info-text" style="color:var(--drip-red);">${rad.nursingPrep}</div>
+                </div>
+            `;
+            document.getElementById("drugModalOverlay").style.display = "flex";
+        }
+
+        const ECG_DATABASE = {
+            "normal_sinus": {
+                shortTitle: "Normal Sinus Rhythm (NSR)",
+                rhythmName: "Normal Sinus Rhythm (NSR - Lead II)",
+                svgPath: "M 0,25 L 15,25 Q 20,18 25,25 L 32,25 L 35,30 L 40,6 L 45,38 L 48,25 L 58,25 Q 68,14 78,25 L 115,25 Q 120,18 125,25 L 132,25 L 135,30 L 140,6 L 145,38 L 148,25 L 158,25 Q 168,14 178,25 L 215,25 Q 220,18 225,25 L 232,25 L 235,30 L 240,6 L 245,38 L 248,25 L 258,25 Q 268,14 278,25 L 315,25 Q 320,18 325,25 L 332,25 L 335,30 L 340,6 L 345,38 L 348,25 L 358,25 Q 368,14 378,25 L 400,25",
+                definition: "The normal physiological electrical rhythm of the heart originating from the Sinoatrial (SA) Node at a regular rate of 60 to 100 beats per minute, propagating normally through the atria, AV node, Bundle of His, and Purkinje fibers.",
+                causes: "- Normal healthy cardiac conduction system.\n- Hemodynamically stabilized ICU patient with controlled pain, normothermia, and balanced electrolytes (K+ 4.0-4.5 mEq/L, Mg++ > 2.0 mg/dL).",
+                recognition: "- Rate: 60 - 100 bpm | Rhythm: Regular R-R and P-P intervals.\n- P Wave: Upright, uniform, and rounded in Lead II; one P wave precedes every QRS complex.\n- PR Interval: Constant between 0.12 - 0.20 seconds (3 to 5 small boxes).\n- QRS Complex: Narrow (< 0.12 sec / < 3 small boxes) with isoelectric ST segment.",
+                treatment: "- No antiarrhythmic intervention required.\n- Continue routine continuous ICU telemetry monitoring and maintain optimal electrolyte balance.",
+                nursingPearls: "- Always verify electrode placement and check baseline QTc interval (< 450 ms) when administering ICU drugs like Ondansetron, Levofloxacin, Haloperidol, or Amiodarone."
+            },
+            "sinus_tachycardia": {
+                shortTitle: "Sinus Tachycardia",
+                rhythmName: "Sinus Tachycardia (Rate > 100 bpm)",
+                svgPath: "M 0,25 L 6,25 Q 10,18 14,25 L 18,25 L 20,30 L 24,6 L 28,38 L 30,25 L 36,25 Q 42,15 48,25 L 56,25 Q 60,18 64,25 L 68,25 L 70,30 L 74,6 L 78,38 L 80,25 L 86,25 Q 92,15 98,25 L 106,25 Q 110,18 114,25 L 118,25 L 120,30 L 124,6 L 128,38 L 130,25 L 136,25 Q 142,15 148,25 L 156,25 Q 160,18 164,25 L 168,25 L 170,30 L 174,6 L 178,38 L 180,25 L 186,25 Q 192,15 198,25 L 206,25 Q 210,18 214,25 L 218,25 L 220,30 L 224,6 L 228,38 L 230,25 L 236,25 Q 242,15 248,25 L 256,25 Q 260,18 264,25 L 268,25 L 270,30 L 274,6 L 278,38 L 280,25 L 286,25 Q 292,15 298,25 L 306,25 Q 310,18 314,25 L 318,25 L 320,30 L 324,6 L 328,38 L 330,25 L 336,25 Q 342,15 348,25 L 356,25 Q 360,18 364,25 L 368,25 L 370,30 L 374,6 L 378,38 L 380,25 L 386,25 Q 392,15 398,25 L 400,25",
+                definition: "Accelerated electrical discharge from the Sinoatrial (SA) Node (> 100 bpm, typically 100-150 bpm in ICU) in response to increased sympathetic tone, catecholamine surge, or increased tissue oxygen demand.",
+                causes: "- Shock States: Septic Shock, Hypovolemic/Hemorrhagic Shock, Anaphylactic Shock, or DKA dehydration.\n- Hypoxemia & Respiratory Distress: ARDS, Pneumonia, COPD/Asthma Exacerbation, or Pulmonary Embolism (often with S1Q3T3 pattern).\n- Hypermetabolic States: High Fever (increases HR by ~10 bpm per 1°C), Severe Pain/Agitation, Major Burns, or Pancreatitis.\n- Drugs: Norepinephrine, Epinephrine, Dobutamine, or Salbutamol nebulizers.",
+                recognition: "- Rate: > 100 bpm (typically 105 - 145 bpm) | Rhythm: Regular.\n- P Wave: Normal upright P wave before every QRS (may merge with preceding T wave at very fast rates > 140 bpm).\n- PR Interval: 0.12 - 0.20 sec | QRS Complex: Narrow (< 0.12 sec).",
+                treatment: "- CRITICAL ICU RULE: Never treat Sinus Tachycardia with Beta-Blockers or antiarrhythmics directly -> ALWAYS identify and treat the underlying cause!\n- Hypovolemia/DKA: IV Crystalloid resuscitation or Packed RBCs.\n- Sepsis/Fever: IV Antibiotics, fluid resuscitation, and Paracetamol.\n- Pain/Agitation: Fentanyl/Propofol analgosedation | Hypoxia: Optimize ventilator FiO2/PEEP.\n- Exception (Aortic Dissection): Use IV Esmolol/Labetalol to strictly drop HR < 60 bpm to prevent aortic rupture.",
+                nursingPearls: "- In shock states, Sinus Tachycardia is a vital compensatory mechanism maintaining Cardiac Output (CO = HR x SV); blocking it prematurely can precipitate cardiovascular collapse."
+            },
+            "sinus_bradycardia": {
+                shortTitle: "Sinus Bradycardia",
+                rhythmName: "Sinus Bradycardia (Rate < 60 bpm)",
+                svgPath: "M 0,25 L 25,25 Q 32,17 40,25 L 50,25 L 54,31 L 60,5 L 66,39 L 70,25 L 86,25 Q 100,13 114,25 L 175,25 Q 182,17 190,25 L 200,25 L 204,31 L 210,5 L 216,39 L 220,25 L 236,25 Q 250,13 264,25 L 325,25 Q 332,17 340,25 L 350,25 L 354,31 L 360,5 L 366,39 L 370,25 L 386,25 Q 395,15 400,25",
+                definition: "Slow electrical discharge originating from the SA node at a rate less than 60 beats per minute, caused by heightened vagal (parasympathetic) tone, intracranial hypertension, or SA node depression.",
+                causes: "- Elevated Intracranial Pressure (ICP - Cushing's Triad): Severe TBI, Intracranial Hemorrhage (ICH), or Subarachnoid Hemorrhage -> causes reflex vagal bradycardia + wide-pulse-pressure hypertension.\n- ICU Medications: Dexmedetomidine (Precedex), Propofol, Opioids (Fentanyl/Morphine), or Beta-Blockers (Esmolol/Labetalol).\n- Environmental / Metabolic: Severe Hypothermia (< 35°C, often with Osborn J-waves), Severe Hypoxia, or Inferior Wall MI.\n- Organophosphate Poisoning (Cholinergic crisis).",
+                recognition: "- Rate: < 60 bpm | Rhythm: Regular slow R-R intervals.\n- P Wave: Upright and uniform before every QRS complex.\n- PR Interval: Normal (0.12 - 0.20 sec) | QRS Complex: Narrow (< 0.12 sec).",
+                treatment: "- If Asymptomatic / Physiologically Expected (e.g., Target HR < 60 on Esmolol in Aortic Dissection): Observe closely.\n- If Due to Elevated ICP (Cushing's Reflex): Administer urgent Mannitol 20% or 3% Hypertonic Saline, elevate HOB 30°, and notify Neurosurgery.\n- If Hemodynamically Unstable (Hypotension, Shock, Altered Mental Status): ACLS Bradycardia Protocol -> First-line Atropine 1 mg IV push (repeat q3-5min up to 3 mg), followed by Transcutaneous Pacing or Epinephrine/Dopamine infusion.",
+                nursingPearls: "- In Neuro-ICU patients (TBI/ICH/SAH), sudden onset of Sinus Bradycardia accompanied by rising systolic BP is a neurosurgical emergency (Cushing's Triad -> impending brain herniation!)."
+            },
+            "atrial_fibrillation": {
+                shortTitle: "Atrial Fibrillation (AFib)",
+                rhythmName: "Atrial Fibrillation (Irregularly Irregular)",
+                svgPath: "M 0,25 Q 4,22 8,26 Q 12,23 16,25 L 20,30 L 24,6 L 28,37 L 31,25 Q 36,22 41,27 Q 46,21 51,26 Q 56,22 61,25 Q 66,28 71,24 Q 76,22 81,25 L 85,30 L 89,6 L 93,37 L 96,25 Q 101,22 106,27 Q 111,23 116,25 L 120,30 L 124,6 L 128,37 L 131,25 Q 137,22 143,27 Q 149,21 155,26 Q 161,22 167,27 Q 173,22 179,25 Q 185,28 191,24 Q 197,22 203,25 L 207,30 L 211,6 L 215,37 L 218,25 Q 223,22 228,27 Q 233,21 238,25 L 242,30 L 246,6 L 250,37 L 253,25 Q 258,22 263,27 Q 268,21 273,26 Q 278,22 283,25 L 287,30 L 291,6 L 295,37 L 298,25 Q 304,22 310,27 Q 316,21 322,26 Q 328,22 334,27 Q 340,21 346,26 Q 352,22 358,27 Q 364,22 370,25 L 374,30 L 378,6 L 382,37 L 385,25 Q 392,22 400,25",
+                definition: "Chaotic, disorganized electrical firing from multiple ectopic foci in the atria (350-600 impulses/min, اغلبها ينشأ حول الأوردة الرئوية) causing loss of effective atrial contraction ('atrial kick') and random, irregularly irregular conduction through the AV node.",
+                causes: "- Acute Mesenteric Ischemia & Cardioembolic Ischemic Stroke (AFib left atrial appendage mural thrombus embolizing to SMA or MCA).\n- Post-CABG / Open-Heart Surgery (Post-Operative AFib occurs in ~30% of patients on Days 2-4 due to pericardial inflammation).\n- Decompensated Heart Failure (atrial stretch), Mitral Valve Disease, Sepsis, Hypokalemia/Hypomagnesemia, or Thyrotoxicosis.",
+                recognition: "- Rhythm: Classic 'Irregularly Irregular' R-R intervals (no pattern to the irregularity).\n- P Waves: Completely ABSENT -> replaced by chaotic, wavy fibrillatory ('f') baseline waves.\n- PR Interval: Not measurable | QRS Complex: Narrow (< 0.12 sec) with variable ventricular rate (Rapid Ventricular Response RVR if HR > 100 bpm).",
+                treatment: "- 1. Hemodynamically Unstable AFib with RVR (Shock, Pulmonary Edema, Ischemic Chest Pain): Immediate Synchronized Cardioversion (120 - 200 Joules biphasic).\n- 2. Hemodynamically Stable Rate/Rhythm Control: IV Amiodarone infusion (150 mg bolus over 10 min, then 1 mg/min -> preferred in ICU/Heart Failure/Sepsis) OR IV Beta-Blocker (Metoprolol/Esmolol) / Diltiazem (avoid CCBs in low EF heart failure).\n- 3. Mandatory Anticoagulation (Heparin / Enoxaparin / Apixaban): Prevents lethal stroke and mesenteric embolism.",
+                nursingPearls: "- Pulse Deficit Check: Compare apical heart rate (ECG) with radial pulse rate (some rapid beats fail to generate enough stroke volume to reach the wrist).\n- If AFib duration is > 48 hours (or unknown), do NOT cardiovert electively without Anticoagulation or Transesophageal Echo (TEE) to rule out Left Atrial Appendage thrombus!"
+            },
+            "atrial_flutter": {
+                shortTitle: "Atrial Flutter (Sawtooth Waves)",
+                rhythmName: "Atrial Flutter (Classic Sawtooth F-Waves)",
+                svgPath: "M 0,28 L 8,16 L 16,28 L 24,16 L 32,28 L 36,31 L 40,6 L 44,37 L 48,28 L 56,16 L 64,28 L 72,16 L 80,28 L 88,16 L 96,28 L 100,31 L 104,6 L 108,37 L 112,28 L 120,16 L 128,28 L 136,16 L 144,28 L 152,16 L 160,28 L 164,31 L 168,6 L 172,37 L 176,28 L 184,16 L 192,28 L 200,16 L 208,28 L 216,16 L 224,28 L 228,31 L 232,6 L 236,37 L 240,28 L 248,16 L 256,28 L 264,16 L 272,28 L 280,16 L 288,28 L 292,31 L 296,6 L 300,37 L 304,28 L 312,16 L 320,28 L 328,16 L 336,28 L 344,16 L 352,28 L 356,31 L 360,6 L 364,37 L 368,28 L 376,16 L 384,28 L 392,16 L 400,28",
+                definition: "A macro-reentrant supraventricular tachyarrhythmia (typically circling the cavotricuspid isthmus in the Right Atrium at 250-350 bpm) with a fixed or variable AV nodal conduction block (e.g., 2:1, 3:1, or 4:1).",
+                causes: "- Severe COPD & Cor Pulmonale (Right atrial enlargement and chronic hypoxemia).\n- Pulmonary Embolism, Post-CABG / Valve Surgery, Heart Failure, or Atrial Septal Defect.",
+                recognition: "- Atrial Rate: 250 - 350 bpm | Ventricular Rhythm: Regular (if fixed 2:1 or 3:1 block; e.g., ventricular rate exactly 150 bpm in 2:1 block) or regularly irregular.\n- P Waves: Replaced by uniform, V-shaped 'Sawtooth' Flutter ('F') waves best seen in Leads II, III, aVF.\n- QRS Complex: Narrow (< 0.12 sec).",
+                treatment: "- Unstable: Synchronized Cardioversion (highly sensitive to low energy: 50 - 100 Joules).\n- Stable: Rate control with IV Beta-Blockers (Esmolol/Metoprolol), Diltiazem, or IV Amiodarone.\n- Anticoagulation protocol identical to Atrial Fibrillation (high stroke risk).",
+                nursingPearls: "- Clinical Clue: A narrow-complex regular tachycardia locked at a heart rate of ~150 bpm is Atrial Flutter with 2:1 AV block until proven otherwise!"
+            },
+            "hyperkalemia_ecg": {
+                shortTitle: "Hyperkalemic Tall Peaked T & Wide QRS",
+                rhythmName: "Hyperkalemic Cardiotoxicity (Tall Peaked T-Waves & Widened QRS)",
+                svgPath: "M 0,28 L 15,28 L 22,36 L 32,7 L 42,38 L 50,28 L 65,4 L 80,28 L 105,28 L 112,36 L 122,7 L 132,38 L 140,28 L 155,4 L 170,28 L 195,28 L 202,36 L 212,7 L 222,38 L 230,28 L 245,4 L 260,28 L 285,28 L 292,36 L 302,7 L 312,38 L 320,28 L 335,4 L 350,28 L 375,28 L 382,36 L 392,7 L 400,28",
+                definition: "Progressive, life-threatening myocardial conduction delay and repolarization abnormality caused by elevated extracellular Serum Potassium (K+ > 5.5 - 7.5 mEq/L), which reduces the resting membrane potential and inactivates sodium channels.",
+                causes: "- Acute Kidney Injury (AKI Stage 3) & End-Stage Renal Disease (ESRD) with oliguria/anuria.\n- Severe Metabolic Acidosis & DKA (extracellular H+ shifts into cells in exchange for K+ moving out into blood).\n- Rhabdomyolysis, Major Thermal Burns, Crush Polytrauma, or Tumor Lysis Syndrome (massive cellular K+ release).\n- Drugs: Succinylcholine (in burns/trauma), ACE Inhibitors, Spironolactone, or KCl overdose.",
+                recognition: "- K+ 5.5 - 6.5 mEq/L: Tall, narrow, symmetrically 'tented' Peaked T-Waves (earliest sign).\n- K+ 6.5 - 7.5 mEq/L: Prolonged PR interval, flattening/loss of P-waves, and progressive Widening of the QRS complex.\n- K+ > 8.0 mEq/L: QRS merges with T-wave forming a lethal 'Sine-Wave' pattern -> degenerates into Ventricular Fibrillation (VF) or Asystole.",
+                treatment: "- EMERGENCY 3-STEP ICU PROTOCOL:\n  1. Stabilize Myocardial Membrane IMMEDIATELY (Works in 1-3 min): Calcium Gluconate 10% 10-20 mL (1-2 ampoules) slow IV over 5 min (antagonizes K+ excitability; does NOT lower serum K+).\n  2. Shift K+ Into Cells (Works in 15-30 min): 10 Units Regular Insulin IV + 50 mL Dextrose 50% (D50W) AND High-dose Nebulized Salbutamol (10-20 mg) + IV Sodium Bicarbonate (if acidotic).\n  3. Remove K+ From Body: IV Furosemide (Lasix), Sodium Zirconium Cyclosilicate (Lokelma) PO or Kayexalate Retention Enema, and urgent Hemodialysis / CRRT.",
+                nursingPearls: "- If you see Peaked T-waves and a widening QRS in a renal or acidotic patient, give IV Calcium Gluconate FIRST before waiting for laboratory confirmation!\n- Monitor capillary blood glucose hourly for 4-6 hours after giving Insulin + D50W to prevent delayed hypoglycemia."
+            },
+            "stemi_ecg": {
+                shortTitle: "Acute STEMI (Tombstone ST-Elevation)",
+                rhythmName: "Acute ST-Elevation Myocardial Infarction (STEMI)",
+                svgPath: "M 0,28 L 12,28 Q 16,22 20,28 L 26,28 L 28,33 L 32,5 L 36,12 Q 48,10 56,16 Q 62,24 66,28 L 92,28 Q 96,22 100,28 L 106,28 L 108,33 L 112,5 L 116,12 Q 128,10 136,16 Q 142,24 146,28 L 172,28 Q 176,22 180,28 L 186,28 L 188,33 L 192,5 L 196,12 Q 208,10 216,16 Q 222,24 226,28 L 252,28 Q 256,22 260,28 L 266,28 L 268,33 L 272,5 L 276,12 Q 288,10 296,16 Q 302,24 306,28 L 332,28 Q 336,22 340,28 L 346,28 L 348,33 L 352,5 L 356,12 Q 368,10 376,16 Q 382,24 386,28 L 400,28",
+                definition: "Acute transmural myocardial ischemia and injury caused by complete thrombotic occlusion of an epicardial coronary artery (e.g., LAD in Anterior STEMI, RCA in Inferior STEMI), producing characteristic ST-segment elevation above the baseline.",
+                causes: "- Rupture of an atherosclerotic coronary plaque with acute platelet aggregation and fibrin thrombus formation.\n- Coronary artery dissection (extending from Type A Aortic Dissection) or coronary graft spasm/thrombosis post-CABG.\n- Severe demand ischemia in Cardiogenic Shock.",
+                recognition: "- Hallmark: Significant ST-Segment Elevation (> 1-2 mm at the J-point in 2 or more contiguous leads, often 'Tombstone' morphology) with reciprocal ST depression in opposite leads.\n- Hyperacute T waves early on, evolving into pathological Q waves and T-wave inversion.\n- Anterior Leads (V1-V4 = LAD) | Lateral (I, aVL, V5-V6 = LCx) | Inferior (II, III, aVF = RCA).",
+                treatment: "- Immediate Reperfusion ('Time is Muscle'): Primary PCI (Catheterization & Stent within < 90 min door-to-balloon) OR Fibrinolysis (Alteplase tPA within 30 min if PCI unavailable).\n- Dual Antiplatelet Therapy (DAPT): Loading Aspirin 300 mg + Ticagrelor 180 mg (or Clopidogrel 600 mg) + Unfractionated Heparin IV infusion.\n- High-intensity Statin (Atorvastatin 80 mg), IV Nitroglycerin (for chest pain/pulmonary edema; CONTRAINDICATED in Inferior/Right Ventricular MI!), and Dobutamine/Norepinephrine if Cardiogenic Shock.",
+                nursingPearls: "- Keep defibrillator pads nearby -> acute ischemic myocardium is highly irritable and prone to sudden Ventricular Fibrillation (VF) arrest during the first 24 hours!"
+            },
+            "ventricular_tachycardia": {
+                shortTitle: "Ventricular Tachycardia (Monomorphic VT)",
+                rhythmName: "Ventricular Tachycardia (Wide-Complex VT)",
+                svgPath: "M 0,25 Q 7,2 14,25 Q 21,46 28,25 Q 35,2 42,25 Q 49,46 56,25 Q 63,2 70,25 Q 77,46 84,25 Q 91,2 98,25 Q 105,46 112,25 Q 119,2 126,25 Q 133,46 140,25 Q 147,2 154,25 Q 161,46 168,25 Q 175,2 182,25 Q 189,46 196,25 Q 203,2 210,25 Q 217,46 224,25 Q 231,2 238,25 Q 245,46 252,25 Q 259,2 266,25 Q 273,46 280,25 Q 287,2 294,25 Q 301,46 308,25 Q 315,2 322,25 Q 329,46 336,25 Q 343,2 350,25 Q 357,46 364,25 Q 371,2 378,25 Q 385,46 392,25 L 400,25",
+                definition: "A life-threatening rapid arrhythmia (3 or more consecutive premature ventricular contractions at a rate of 140-250 bpm) originating below the Bundle of His in the ventricular myocardium, drastically reducing ventricular filling time and cardiac output.",
+                causes: "- Acute Myocardial Infarction (STEMI/NSTEMI), Ischemic Cardiomyopathy scar, or Cardiogenic Shock.\n- Severe Electrolyte Imbalances: Hypokalemia (K+ < 3.5 mEq/L), Hyperkalemia, or Hypomagnesemia (Mg++ < 1.8 mg/dL -> causes Polymorphic VT / Torsades de Pointes).\n- Tricyclic Antidepressant (TCA) Overdose or Digoxin/Antiarrhythmic QTc toxicity.\n- Catecholamine infusions (Dobutamine / Epinephrine).",
+                recognition: "- Rate: 140 - 250 bpm | Rhythm: Usually regular.\n- P Waves: Absent or AV-dissociated (buried in wide QRS complexes).\n- QRS Complex: Markedly WIDE (> 0.12 sec, often > 0.16 sec), bizarre, sawtooth-like large monomorphic complexes with T waves opposite to QRS deflection.",
+                treatment: "- FIRST STEP: Immediately check the patient's pulse and blood pressure!\n- 1. Pulseless VT (Treated identically to VF): Immediate unsynchronized Defibrillation (200 Joules biphasic) + High-Quality CPR + Epinephrine 1 mg IV q3-5min + Amiodarone 300 mg IV push.\n- 2. Unstable VT WITH a Pulse (Hypotension, Shock, Chest Pain, Altered Consciousness): Immediate Synchronized Cardioversion (100 Joules) with sedation.\n- 3. Stable VT WITH a Pulse: Amiodarone 150 mg IV in 100 mL D5W over 10 minutes, followed by 1 mg/min drip for 6h (OR IV Lidocaine); give IV Magnesium Sulfate 2g if polymorphic Torsades de Pointes.",
+                nursingPearls: "- NEVER rely on the monitor alone -> always check the patient's carotid pulse (loose leads or patient shivering/toothbrushing can mimic VT artifact).\n- Correct K+ to >= 4.0 mEq/L and Mg++ to >= 2.0 mg/dL immediately."
+            },
+            "ventricular_fibrillation": {
+                shortTitle: "Ventricular Fibrillation (Coarse VF - ROSC)",
+                rhythmName: "Ventricular Fibrillation (VF - Arrest / Post-Defibrillation)",
+                svgPath: "M 0,25 Q 5,8 10,32 Q 15,14 20,38 Q 25,4 30,28 Q 35,18 40,42 Q 45,6 50,30 Q 55,12 60,36 Q 65,16 70,28 Q 75,5 80,39 Q 85,11 90,33 Q 95,19 100,41 Q 105,7 110,29 Q 115,15 120,37 Q 125,3 130,31 Q 135,17 140,40 Q 145,9 150,34 Q 155,13 160,38 Q 165,6 170,27 Q 175,18 180,42 Q 185,8 190,32 Q 195,14 200,36 Q 205,5 210,29 Q 215,16 220,39 Q 225,10 230,33 Q 235,18 240,41 Q 245,7 250,30 Q 255,14 260,37 Q 265,4 270,28 Q 275,17 280,40 Q 285,9 290,32 Q 295,15 300,38 Q 305,6 310,29 Q 315,18 320,41 Q 325,8 330,31 Q 335,14 340,36 Q 345,5 350,28 Q 355,17 360,39 Q 365,10 370,32 Q 375,15 380,37 Q 385,7 390,29 Q 395,18 400,25",
+                definition: "Chaotic, asynchronous, disorganized electrical quivering of the ventricles with ZERO mechanical contraction, zero cardiac output, and immediate loss of pulse and consciousness (Fatal Cardiac Arrest within minutes if not defibrillated).",
+                causes: "- Acute Myocardial Ischemia / STEMI (Most common cause of sudden cardiac arrest).\n- Degeneration of untreated Sustained Ventricular Tachycardia (VT).\n- Severe Hyperkalemia, Hypokalemia, Acidosis, Severe Hypoxia, Electrical Shock, or Drowning.",
+                recognition: "- Rate: Indeterminate (300 - 500 chaotic deflections/min) | Rhythm: Completely chaotic and irregular with no organized complexes.\n- P Waves, PR Interval & QRS Complex: Completely ABSENT -> wavy, undulating fibrillatory baseline of varying amplitude (Coarse VF initially -> Fine VF as myocardial ATP depletes).",
+                treatment: "- IMMEDIATE ACLS SHOCKABLE ARREST PROTOCOL:\n  1. Start High-Quality CPR immediately (Push hard & fast 100-120/min, depth 5-6 cm) while charging defibrillator.\n  2. Unsynchronized Biphasic Defibrillation Shock (200 Joules) -> resume CPR immediately for 2 minutes before pulse/rhythm check.\n  3. Epinephrine 1 mg IV/IO every 3-5 minutes (after 2nd shock).\n  4. Amiodarone 300 mg IV/IO bolus (after 3rd shock; second dose 150 mg) OR Lidocaine 1-1.5 mg/kg.\n  5. Post-ROSC Care: Targeted Temperature Management (<= 36°C), coronary angiography, and strict normoxia/normocapnia.",
+                nursingPearls: "- Every 1-minute delay in Defibrillation reduces survival by 7% to 10%! Minimize interruptions in chest compressions (< 10 seconds) before and after shock delivery."
+            },
+            "electrical_alternans": {
+                shortTitle: "Sinus Tachycardia + Electrical Alternans",
+                rhythmName: "Electrical Alternans & Low Voltage (Cardiac Tamponade)",
+                svgPath: "M 0,25 L 8,25 Q 11,20 14,25 L 18,25 L 20,29 L 23,5 L 26,38 L 28,25 L 34,25 Q 38,18 42,25 L 50,25 Q 53,20 56,25 L 60,25 L 62,27 L 65,14 L 68,31 L 70,25 L 76,25 Q 80,19 84,25 L 92,25 Q 95,20 98,25 L 102,25 L 104,29 L 107,5 L 110,38 L 112,25 L 118,25 Q 122,18 126,25 L 134,25 Q 137,20 140,25 L 144,25 L 146,27 L 149,14 L 152,31 L 154,25 L 160,25 Q 164,19 168,25 L 176,25 Q 179,20 182,25 L 186,25 L 188,29 L 191,5 L 194,38 L 196,25 L 202,25 Q 206,18 210,25 L 218,25 Q 221,20 224,25 L 228,25 L 230,27 L 233,14 L 236,31 L 238,25 L 244,25 Q 248,19 252,25 L 260,25 Q 263,20 266,25 L 270,25 L 272,29 L 275,5 L 278,38 L 280,25 L 286,25 Q 290,18 294,25 L 302,25 Q 305,20 308,25 L 312,25 L 314,27 L 317,14 L 320,31 L 322,25 L 328,25 Q 332,19 336,25 L 344,25 Q 347,20 350,25 L 354,25 L 356,29 L 359,5 L 362,38 L 364,25 L 370,25 Q 374,18 378,25 L 386,25 L 388,27 L 391,14 L 394,31 L 400,25",
+                definition: "A classic diagnostic ECG pattern where the amplitude and axis of the QRS complexes alternate between tall and short from beat to beat, combined with sinus tachycardia and low voltage, caused by the heart swinging back and forth inside a large fluid-filled pericardial sac.",
+                causes: "- Cardiac Tamponade (Post-CABG clotted mediastinal chest tube, post-MI free wall rupture, malignant pericardial effusion, or penetrating chest trauma).\n- Massive Pericardial Effusion.",
+                recognition: "- Rate: > 100 bpm (Compensatory Sinus Tachycardia).\n- QRS Amplitude: Alternating tall-short-tall-short QRS height beat-to-beat (Electrical Alternans) + generalized low QRS voltage (fluid insulates electrical signal).",
+                treatment: "- Emergent Pericardiocentesis (Ultrasound-guided needle aspiration & pigtail drain) OR Bedside Surgical Resternotomy / Pericardial Window.\n- Temporary Bridge: IV Fluid bolus + Norepinephrine to maintain RV filling pressure until fluid is evacuated.",
+                nursingPearls: "- Always correlate Electrical Alternans with Beck's Triad (Hypotension + Distended Neck Veins/High CVP + Muffled Heart Sounds) and Pulsus Paradoxus (> 10 mmHg SBP drop on inspiration)."
+            },
+            "tca_wide_qrs": {
+                shortTitle: "Sinus Tachycardia + Wide QRS (>110ms)",
+                rhythmName: "Sodium-Channel Blockade Wide QRS Tachycardia (Drug Toxicity)",
+                svgPath: "M 0,26 L 10,26 L 16,35 L 28,6 L 40,39 L 48,26 Q 58,15 68,26 L 80,26 L 86,35 L 98,6 L 110,39 L 118,26 Q 128,15 138,26 L 150,26 L 156,35 L 168,6 L 180,39 L 188,26 Q 198,15 208,26 L 220,26 L 226,35 L 238,6 L 250,39 L 258,26 Q 268,15 278,26 L 290,26 L 296,35 L 308,6 L 320,39 L 328,26 Q 338,15 348,26 L 360,26 L 366,35 L 378,6 L 390,39 L 400,26",
+                definition: "Sinus tachycardia (from anticholinergic M2 blockade) accompanied by intraventricular conduction delay (QRS duration > 100-120 ms) and QTc prolongation caused by toxic blockade of fast myocardial Voltage-Gated Sodium Channels.",
+                causes: "- Tricyclic Antidepressant (TCA - Amitriptyline/Clomipramine) Overdose.\n- Type Ia/Ic Antiarrhythmic, Cocaine, Diphenhydramine, or Carbamazepine Toxicity.",
+                recognition: "- Rate: 110 - 140 bpm | QRS Duration: > 100 ms (QRS > 100 ms predicts generalized seizures; QRS > 160 ms predicts lethal Ventricular Tachycardia/VF!).\n- Terminal R wave > 3 mm in lead aVR.",
+                treatment: "- Immediate Antidote: Hypertonic Sodium Bicarbonate 8.4% 50-100 mEq (1-2 mEq/kg) IV Push boluses repeated every 5 minutes until QRS narrows < 100 ms, followed by isotonic NaHCO3 drip (target arterial pH 7.45 - 7.55).\n- High-concentration Na+ overcomes sodium channel blockade, while alkalemia reduces free drug binding to channels.",
+                nursingPearls: "- Monitor serial 12-lead ECG strips every 15-30 minutes to track QRS narrowing in response to Sodium Bicarbonate therapy."
+            }
+        };
+
+        function getPatientECGInfo(p) {
+            const diag = (p.ICU_Diagnosis || "").toLowerCase();
+            const labs = p.Labs || {};
+            const vitals = p.Vitals || {};
+            const kVal = parseFloat(labs.K || 4.2);
+            const hrVal = parseInt((vitals.HR || "90").replace(/[^0-9]/g, ""), 10) || 90;
+            const idNum = parseInt((p.Patient_ID || "10001").replace(/[^0-9]/g, ""), 10) || 1;
+
+            if (diag.includes("hyperkalemia") || (kVal >= 6.0 && (diag.includes("kidney") || diag.includes("aki") || diag.includes("esrd") || diag.includes("acidosis")))) {
+                return ECG_DATABASE["hyperkalemia_ecg"];
+            }
+            if (diag.includes("tamponade")) {
+                return ECG_DATABASE["electrical_alternans"];
+            }
+            if (diag.includes("stemi") || diag.includes("myocardial infarction") || diag.includes("cardiogenic shock")) {
+                return ECG_DATABASE["stemi_ecg"];
+            }
+            if (diag.includes("cardiac arrest") || diag.includes("rosc") || diag.includes("post-resuscitation")) {
+                return (idNum % 2 === 0) ? ECG_DATABASE["ventricular_fibrillation"] : ECG_DATABASE["ventricular_tachycardia"];
+            }
+            if (diag.includes("arrhythmia") || diag.includes("vt") || diag.includes("vf") || diag.includes("afib")) {
+                if (diag.includes("afib")) return ECG_DATABASE["atrial_fibrillation"];
+                return (idNum % 3 === 0) ? ECG_DATABASE["atrial_fibrillation"] : ((idNum % 3 === 1) ? ECG_DATABASE["ventricular_tachycardia"] : ECG_DATABASE["ventricular_fibrillation"]);
+            }
+            if (diag.includes("mesenteric ischemia") || diag.includes("ischemic stroke")) {
+                return ECG_DATABASE["atrial_fibrillation"];
+            }
+            if (diag.includes("copd") || diag.includes("pulmonary embolism")) {
+                return (idNum % 2 === 0) ? ECG_DATABASE["atrial_flutter"] : ECG_DATABASE["sinus_tachycardia"];
+            }
+            if (diag.includes("heart failure") || diag.includes("adhf")) {
+                return (idNum % 2 === 0) ? ECG_DATABASE["atrial_fibrillation"] : ECG_DATABASE["sinus_tachycardia"];
+            }
+            if (diag.includes("overdose") || diag.includes("toxicity")) {
+                return ECG_DATABASE["tca_wide_qrs"];
+            }
+            if (diag.includes("traumatic brain") || diag.includes("tbi") || diag.includes("intracranial") || diag.includes("ich") || diag.includes("subarachnoid") || diag.includes("sah") || diag.includes("icp") || diag.includes("hypothermia") || hrVal < 65) {
+                return ECG_DATABASE["sinus_bradycardia"];
+            }
+            if (diag.includes("aortic dissection") && hrVal <= 75) {
+                return ECG_DATABASE["normal_sinus"];
+            }
+            if (diag.includes("cabg") || diag.includes("open heart") || (hrVal >= 60 && hrVal <= 100 && !diag.includes("shock") && !diag.includes("sepsis"))) {
+                return ECG_DATABASE["normal_sinus"];
+            }
+            return ECG_DATABASE["sinus_tachycardia"];
+        }
+
+        function openECGModal(patientId) {
+            const p = filteredPatients.find(item => item.Patient_ID === patientId) ||
+                      allPatients.find(item => item.Patient_ID === patientId);
+            if (!p) return;
+
+            const ecg = getPatientECGInfo(p);
+            const vitals = p.Vitals || {};
+            const labs = p.Labs || {};
+
+            document.getElementById("modalDrugHeader").textContent = `ECG Rhythm Analysis & Guide (${p.Patient_ID})`;
+            document.getElementById("modalDrugBody").innerHTML = `
+                <div class="drug-info-row">
+                    <div class="drug-info-title">Live Lead II Telemetry Strip (${ecg.rhythmName} | HR: ${vitals.HR || ""} | K+: ${labs.K || ""} mEq/L):</div>
+                    <div class="ecg-strip-frame" style="height:64px; margin-top:6px;">
+                        <svg viewBox="0 0 400 48" preserveAspectRatio="none" class="ecg-svg">
+                            <path d="${ecg.svgPath}" fill="none" stroke="#1b1b1b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">1. Rhythm Definition & Electrophysiology:</div>
+                    <div class="drug-info-text"><strong>${ecg.rhythmName}</strong>\n${ecg.definition}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">2. Etiology & Why It Occurs in This Patient (${p.ICU_Diagnosis || ""}):</div>
+                    <div class="drug-info-text">${ecg.causes}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">3. How to Recognize It on the ECG Strip (Diagnostic Criteria):</div>
+                    <div class="drug-info-text">${ecg.recognition}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">4. ICU Management & Treatment Protocol:</div>
+                    <div class="drug-info-text">${ecg.treatment}</div>
+                </div>
+                <div class="drug-info-row">
+                    <div class="drug-info-title">5. Critical Nursing Telemetry Pearls & Red Flags:</div>
+                    <div class="drug-info-text" style="color:var(--drip-red);">${ecg.nursingPearls}</div>
+                </div>
+            `;
+            document.getElementById("drugModalOverlay").style.display = "flex";
+        }
+
         function closeDrugModal() {
             document.getElementById("drugModalOverlay").style.display = "none";
         }
@@ -2108,6 +2528,38 @@
             });
 
             return result;
+        }
+
+        // دالة توليد الإجراءات التمريضية الخاصة (Enema, Gastric Lavage, Bladder IAP, EVD, Chest Tube...) حسب التشخيص
+        function getSpecialNursingProcedures(p) {
+            const baseInterventions = p.Nursing_Interventions || p.Priority_Nursing_Interventions || "";
+            const diag = (p.ICU_Diagnosis || "").toLowerCase();
+            let extraProc = "";
+
+            if (diag.includes("hepatic") || diag.includes("cirrhosis") || diag.includes("liver") || diag.includes("variceal") || diag.includes("gastrointestinal bleeding")) {
+                extraProc = "6. SPECIAL PROCEDURE (ENEMA & GI BLEED PROTOCOL): Administer Lactulose Retention Enema (300 mL Lactulose + 700 mL Warm Water/Normal Saline via rectal balloon tube, retained for 30-60 min in left lateral position) q6-8h to rapidly clear gut blood & Ammonia; perform Room-Temperature Saline Gastric Lavage via NGT prior to endoscopy and keep Sengstaken-Blakemore balloon tube at bedside.";
+            } else if (diag.includes("overdose") || diag.includes("toxicity")) {
+                extraProc = "6. SPECIAL PROCEDURE (GASTRIC DECONTAMINATION & BOWEL IRRIGATION): Perform Orogastric Lavage via large-bore 36-40Fr tube (after securing cuffed ETT airway) if within 1h of ingestion, followed by Single/Multiple-Dose Activated Charcoal (50g via OGT) and Polyethylene Glycol Whole-Bowel Irrigation / Cleansing Enema to accelerate toxin elimination.";
+            } else if (diag.includes("pancreatitis") || diag.includes("peritonitis") || diag.includes("perforation") || diag.includes("mesenteric")) {
+                extraProc = "6. SPECIAL PROCEDURE (DECOMPRESSION & IAP TRANSDUCER): Maintain Salem Sump NGT on Low Intermittent Wall Suction (-40 to -60 mmHg; irrigate air vent with 20mL air q4h), perform Trans-Vesical Intra-Abdominal Pressure (IAP) measurement via Foley catheter (instill 25mL sterile saline, zero at mid-axillary iliac crest) q4h, and strictly avoid rectal enemas if bowel perforation/ischemia is present.";
+            } else if (diag.includes("traumatic brain") || diag.includes("tbi") || diag.includes("intracranial") || diag.includes("subarachnoid") || diag.includes("stroke") || diag.includes("icp") || diag.includes("craniotomy")) {
+                extraProc = "6. SPECIAL PROCEDURE (NEURO BOWEL & EVD PROTOCOL): Administer scheduled Glycerin / Bisacodyl rectal suppositories + OGT Docusate/Lactulose to prevent constipation and Valsalva straining (avoid high-volume forceful enemas which spike ICP!); zero EVD transducer at tragus and clamp drain during all position changes.";
+            } else if (diag.includes("hyperkalemia") || diag.includes("electrolyte") || diag.includes("kidney") || diag.includes("aki") || diag.includes("esrd")) {
+                extraProc = "6. SPECIAL PROCEDURE (POTASSIUM CLEARANCE ENEMA & CRRT CARE): If oral/NGT route is contraindicated (ileus/vomiting) in severe Hyperkalemia, administer Sodium Polystyrene Sulfonate (Kayexalate 30-50g in 150mL warm water) Retention Enema for 30-60 min followed by non-sodium cleansing enema irrigation; maintain strict aseptic Heparin/Citrate lock care for Hemodialysis/CRRT catheter.";
+            } else if (diag.includes("cabg") || diag.includes("open heart") || diag.includes("tamponade") || diag.includes("pneumothorax") || diag.includes("pleural")) {
+                extraProc = "6. SPECIAL PROCEDURE (CHEST TUBE & EPICARDIAL PACER CARE): Perform gentle squeezing/milking of mediastinal drains if visible clots threaten tamponade (never vigorous stripping or clamping!), verify underwater seal suction (-20 cmH2O), and insulate temporary epicardial pacing wires with rubber glove finger.";
+            } else if (diag.includes("burns") || diag.includes("polytrauma")) {
+                extraProc = "6. SPECIAL PROCEDURE (BURN ESCHAROTOMY & COMPARTMENT CARE): Perform aseptic closed Silver Sulfadiazine / Paraffin gauze burn dressing changes under Ketamine analgesia, prepare bedside Escharotomy/Fasciotomy tray for circumferential burns, and perform hourly Bladder Pressure & Myoglobinuria urine checks.";
+            } else if (diag.includes("ards") || diag.includes("pneumonia") || diag.includes("copd") || diag.includes("asthma") || diag.includes("drowning")) {
+                extraProc = "6. SPECIAL PROCEDURE (AIRWAY CLEARANCE & BRONCHOSCOPY PREP): Perform percussive chest physiotherapy / high-frequency chest wall oscillation q4h, instill inline mucolytic nebulization, and prepare bedside Fiberoptic Bronchoscopy with warm saline bronchoalveolar lavage (BAL) for refractory mucus plugging/atelectasis.";
+            } else {
+                extraProc = "6. SPECIAL PROCEDURE (ICU BOWEL, FOLEY & LINE BUNDLE): Administer PRN Glycerin suppository / Fleet Enema if no bowel movement for > 72h in sedated ICU patient, perform daily Chlorhexidine 2% bed bath, and audit CVC/Foley line necessity daily.";
+            }
+
+            if (baseInterventions.includes("SPECIAL PROCEDURE")) {
+                return baseInterventions;
+            }
+            return baseInterventions ? (baseInterventions + "\n" + extraProc) : extraProc;
         }
 
         async function loadDataset() {
@@ -2308,6 +2760,30 @@
             const ventSectionHTML = createVentilatorSectionHTML(p);
             const linkedDripsSummary = formatMedicationTextWithLinks(p.Drips_Summary || p.Active_Infusions_Medications || "");
             const encodedDiagnosis = encodeURIComponent(p.ICU_Diagnosis || "");
+            const fullNursingInterventions = getSpecialNursingProcedures(p);
+
+            // إنشاء شريط رسم القلب التفاعلي (ECG Strip) الملائم لتشخيص الحالة
+            const ecgInfo = getPatientECGInfo(p);
+            const ecgBoxHTML = `
+                <div class="vitals-ecg-box">
+                    <div class="ecg-header-line">
+                        <span><span class="clickable-ecg" onclick="openECGModal('${p.Patient_ID}')">ECG</span> Lead II: <span class="field-value">${ecgInfo.shortTitle}</span></span>
+                    </div>
+                    <div class="ecg-strip-frame" onclick="openECGModal('${p.Patient_ID}')" style="cursor:pointer;" title="Click to open full ECG interpretation">
+                        <svg viewBox="0 0 400 48" preserveAspectRatio="none" class="ecg-svg">
+                            <path d="${ecgInfo.svgPath}" fill="none" stroke="#1b1b1b" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            `;
+
+            // إنشاء خانة الأشعة تحت العلامات الحيوية فقط للتشخيصات التي تستدعي أشعة
+            const radInfo = getPatientRadiologyInfo(p);
+            const radiologyBoxHTML = radInfo.hasImaging
+                ? `<div class="vitals-radiology-box">
+                       <span class="clickable-rad" onclick="openRadiologyModal('${p.Patient_ID}')">Imaging</span>: <span class="field-value">${radInfo.shortLabel}</span>
+                   </div>`
+                : "";
 
             return `
             <div class="patient-sheet">
@@ -2487,6 +2963,8 @@
                                 <span class="v-val">${vitals.SpO2 || ""}</span>
                             </div>
                         </div>
+                        ${ecgBoxHTML}
+                        ${radiologyBoxHTML}
                     </div>
 
                     <div class="triple-col">
@@ -2565,8 +3043,8 @@
                             <span>NOTES & PLAN (NURSING CARE & VENT WATCH)</span>
                         </div>
                         <div class="notes-body">
-                            <div class="nursing-tag">Priority ICU Nursing Interventions:</div>
-                            <div>${p.Nursing_Interventions || p.Priority_Nursing_Interventions || ""}</div>
+                            <div class="nursing-tag">Priority ICU Nursing Interventions & Special Procedures:</div>
+                            <div>${fullNursingInterventions}</div>
                             <div class="nursing-tag" style="margin-top:10px;">Ventilator Precautions & Alarms to Watch:</div>
                             <div>${p.Ventilator_Watch || p.Ventilator_Nursing_Precautions_Alarms || ""}</div>
                         </div>
